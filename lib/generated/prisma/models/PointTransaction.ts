@@ -448,6 +448,7 @@ export type PointTransactionCreateOrConnectWithoutUserInput = {
 
 export type PointTransactionCreateManyUserInputEnvelope = {
   data: Prisma.PointTransactionCreateManyUserInput | Prisma.PointTransactionCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type PointTransactionUpsertWithWhereUniqueWithoutUserInput = {
@@ -1233,6 +1234,7 @@ export type PointTransactionCreateManyArgs<ExtArgs extends runtime.Types.Extensi
    * The data used to create many PointTransactions.
    */
   data: Prisma.PointTransactionCreateManyInput | Prisma.PointTransactionCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1251,6 +1253,7 @@ export type PointTransactionCreateManyAndReturnArgs<ExtArgs extends runtime.Type
    * The data used to create many PointTransactions.
    */
   data: Prisma.PointTransactionCreateManyInput | Prisma.PointTransactionCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

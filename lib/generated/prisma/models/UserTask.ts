@@ -406,6 +406,7 @@ export type UserTaskCreateOrConnectWithoutUserInput = {
 
 export type UserTaskCreateManyUserInputEnvelope = {
   data: Prisma.UserTaskCreateManyUserInput | Prisma.UserTaskCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type UserTaskUpsertWithWhereUniqueWithoutUserInput = {
@@ -453,6 +454,7 @@ export type UserTaskCreateOrConnectWithoutTaskInput = {
 
 export type UserTaskCreateManyTaskInputEnvelope = {
   data: Prisma.UserTaskCreateManyTaskInput | Prisma.UserTaskCreateManyTaskInput[]
+  skipDuplicates?: boolean
 }
 
 export type UserTaskUpsertWithWhereUniqueWithoutTaskInput = {
@@ -1238,6 +1240,7 @@ export type UserTaskCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * The data used to create many UserTasks.
    */
   data: Prisma.UserTaskCreateManyInput | Prisma.UserTaskCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1256,6 +1259,7 @@ export type UserTaskCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * The data used to create many UserTasks.
    */
   data: Prisma.UserTaskCreateManyInput | Prisma.UserTaskCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

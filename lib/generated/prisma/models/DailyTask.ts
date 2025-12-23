@@ -338,6 +338,7 @@ export type DailyTaskCreateOrConnectWithoutUserInput = {
 
 export type DailyTaskCreateManyUserInputEnvelope = {
   data: Prisma.DailyTaskCreateManyUserInput | Prisma.DailyTaskCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type DailyTaskUpsertWithWhereUniqueWithoutUserInput = {
@@ -1090,6 +1091,7 @@ export type DailyTaskCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * The data used to create many DailyTasks.
    */
   data: Prisma.DailyTaskCreateManyInput | Prisma.DailyTaskCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1108,6 +1110,7 @@ export type DailyTaskCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    * The data used to create many DailyTasks.
    */
   data: Prisma.DailyTaskCreateManyInput | Prisma.DailyTaskCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */
