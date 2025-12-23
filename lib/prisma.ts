@@ -6,19 +6,30 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-// Extract database path from DATABASE_URL
-const dbPath = env.DATABASE_URL.replace(/^file:/, "") || "./dev.db";
+// Check if DATABASE_URL is a file path (SQLite) or connection string (PostgreSQL/other)
+const isSQLite = env.DATABASE_URL.startsWith("file:");
 
-// Create adapter with database path
-const adapter = new PrismaBetterSqlite3({
-  url: dbPath,
-});
+let prismaInstance: PrismaClient;
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+if (isSQLite) {
+  // SQLite for local development
+  const dbPath = env.DATABASE_URL.replace(/^file:/, "") || "./dev.db";
+  const adapter = new PrismaBetterSqlite3({
+    url: dbPath,
+  });
+  
+  prismaInstance = new PrismaClient({
     adapter,
   } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+} else {
+  // PostgreSQL or other database for production (Vercel, etc.)
+  // Prisma automatically uses DATABASE_URL from environment
+  // Pass empty object to satisfy TypeScript - Prisma reads DATABASE_URL from env
+  prismaInstance = new PrismaClient({} as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+export const prisma =
+  globalForPrisma.prisma ?? prismaInstance;
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
