@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id                    String            @id @default(cuid())
+  email                 String            @unique
+  passwordHash          String?           @map("password_hash") // Optional for OAuth users
+  name                  String?           // For OAuth users
+  image                 String?           // Profile image from OAuth
+  points                Int               @default(0)
+  referralCode          String            @unique @map("referral_code")
+  referredBy            String?           @map("referred_by")
+  emailVerified         Boolean           @default(false) @map("email_verified")
+  emailVerificationToken String?          @map("email_verification_token")
+  resetPasswordToken    String?           @map("reset_password_token")
+  resetPasswordExpires  DateTime?         @map("reset_password_expires")
+  createdAt             DateTime          @default(now()) @map("created_at")
+  accounts              Account[]
+  dailyTasks            DailyTask[]
+  pointTransactions     PointTransaction[]
+  userTasks             UserTask[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+  @@index([userId])
+}
+
+model DailyTask {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  lastCompletedDate DateTime @map("last_completed_date")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lastCompletedDate])
+  @@map("daily_tasks")
+}
+
+model PointTransaction {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  amount      Int
+  type        String   // 'daily_checkin', 'referral_signup', 'referral_reward', 'profile_completion', 'weekly_challenge', 'manual'
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("point_transactions")
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Task {
+  id        String    @id @default(cuid())
+  name      String
+  type      String    // 'daily', 'one_time', 'referral', 'weekly'
+  points    Int
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  userTasks UserTask[]
+
+  @@map("tasks")
+}
+
+model UserTask {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  taskId      String   @map("task_id")
+  completedAt DateTime @default(now()) @map("completed_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, taskId])
+  @@map("user_tasks")
+  @@index([userId])
+  @@index([taskId])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
+  eventType String   @map("event_type")
+  metadata  String?  // JSON string
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("analytics_events")
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+}
