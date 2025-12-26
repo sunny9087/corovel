@@ -9,6 +9,8 @@ import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
 import HeaderLogoutButton from "@/components/HeaderLogoutButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const user = await requireAuth();
 

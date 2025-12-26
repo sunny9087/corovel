@@ -10,6 +10,8 @@ import { requireCsrfToken } from "@/lib/csrf";
 import { checkInRateLimiter, getRateLimitKey } from "@/lib/rate-limit";
 import { trackEvent } from "@/lib/analytics";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();

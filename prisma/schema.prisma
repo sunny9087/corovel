@@ -12,16 +12,16 @@ datasource db {
 
 model User {
   id                    String            @id @default(cuid())
-  email                 String            @unique @db.Text
-  passwordHash          String?           @map("password_hash") @db.Text // Optional for OAuth users
-  name                  String?           @db.Text // For OAuth users
-  image                 String?           @db.Text // Profile image from OAuth
+  email                 String            @unique
+  passwordHash          String?           @map("password_hash") // Optional for OAuth users
+  name                  String?           // For OAuth users
+  image                 String?           // Profile image from OAuth
   points                Int               @default(0)
-  referralCode          String            @unique @map("referral_code") @db.Text
-  referredBy            String?           @map("referred_by") @db.Text
+  referralCode          String            @unique @map("referral_code")
+  referredBy            String?           @map("referred_by")
   emailVerified         Boolean           @default(false) @map("email_verified")
-  emailVerificationToken String?          @map("email_verification_token") @db.Text
-  resetPasswordToken    String?           @map("reset_password_token") @db.Text
+  emailVerificationToken String?          @map("email_verification_token")
+  resetPasswordToken    String?           @map("reset_password_token")
   resetPasswordExpires  DateTime?         @map("reset_password_expires")
   createdAt             DateTime          @default(now()) @map("created_at")
   accounts              Account[]
@@ -34,17 +34,17 @@ model User {
 
 model Account {
   id                String  @id @default(cuid())
-  userId            String  @map("user_id") @db.Text
-  type              String  @db.Text
-  provider          String  @db.Text
-  providerAccountId String  @map("provider_account_id") @db.Text
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
-  token_type        String? @db.Text
-  scope             String? @db.Text
-  id_token          String? @db.Text
-  session_state     String? @db.Text
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -54,7 +54,7 @@ model Account {
 
 model DailyTask {
   id                String   @id @default(cuid())
-  userId            String   @map("user_id") @db.Text
+  userId            String   @map("user_id")
   lastCompletedDate DateTime @map("last_completed_date")
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -64,10 +64,10 @@ model DailyTask {
 
 model PointTransaction {
   id          String   @id @default(cuid())
-  userId      String   @map("user_id") @db.Text
+  userId      String   @map("user_id")
   amount      Int
-  type        String   @db.Text // 'daily_checkin', 'referral_signup', 'referral_reward', 'profile_completion', 'weekly_challenge', 'manual'
-  description String?  @db.Text
+  type        String   // 'daily_checkin', 'referral_signup', 'referral_reward', 'profile_completion', 'weekly_challenge', 'manual'
+  description String?  
   createdAt   DateTime @default(now()) @map("created_at")
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -78,8 +78,8 @@ model PointTransaction {
 
 model Task {
   id        String    @id @default(cuid())
-  name      String    @db.Text
-  type      String    @db.Text // 'daily', 'one_time', 'referral', 'weekly'
+  name      String    // 'daily', 'one_time', 'referral', 'weekly'
+  type      String    
   points    Int
   isActive  Boolean   @default(true) @map("is_active")
   createdAt DateTime  @default(now()) @map("created_at")
@@ -90,8 +90,8 @@ model Task {
 
 model UserTask {
   id          String   @id @default(cuid())
-  userId      String   @map("user_id") @db.Text
-  taskId      String   @map("task_id") @db.Text
+  userId      String   @map("user_id")
+  taskId      String   @map("task_id")
   completedAt DateTime @default(now()) @map("completed_at")
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
@@ -104,9 +104,9 @@ model UserTask {
 
 model AnalyticsEvent {
   id        String   @id @default(cuid())
-  userId    String?  @map("user_id") @db.Text
-  eventType String   @map("event_type") @db.Text
-  metadata  String?  @db.Text // JSON string
+  userId    String?  @map("user_id")
+  eventType String   @map("event_type")
+  metadata  String?  // JSON string
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("analytics_events")

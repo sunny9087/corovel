@@ -5,6 +5,8 @@ import { passwordResetSchema } from "@/lib/validation";
 import { authRateLimiter, getRateLimitKey } from "@/lib/rate-limit";
 import { requireCsrfToken } from "@/lib/csrf";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting

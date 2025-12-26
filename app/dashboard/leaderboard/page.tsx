@@ -1,6 +1,8 @@
 import Sidebar from "@/components/Sidebar";
 import Leaderboard from "@/components/Leaderboard";
 
+export const dynamic = "force-dynamic";
+
 export default async function LeaderboardPage() {
   return (
     <div className="min-h-screen gradient-mesh">

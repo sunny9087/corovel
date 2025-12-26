@@ -6,6 +6,8 @@ import { authRateLimiter, getRateLimitKey } from "@/lib/rate-limit";
 import { requireCsrfToken } from "@/lib/csrf";
 import { trackEvent } from "@/lib/analytics";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting

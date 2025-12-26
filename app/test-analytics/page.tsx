@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { getAnalyticsSummary } from "@/lib/analytics";
 
+export const dynamic = "force-dynamic";
+
 export default async function TestAnalyticsPage() {
   try {
     // Test database connection

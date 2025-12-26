@@ -1,0 +1,10 @@
+.next
+node_modules
+dist
+npm-debug.log
+.env
+.env.local
+prisma/migrations
+lib/generated/prisma
+docker-compose.override.yml
+.git

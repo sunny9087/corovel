@@ -3,12 +3,40 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+// Get DATABASE_URL from environment
+// For Vercel: Use POSTGRES_PRISMA_URL (auto-created by Vercel) or DATABASE_URL
+// For local dev: Use DATABASE_URL from .env file (can be PostgreSQL connection string for testing)
+const databaseUrl = process.env["DATABASE_URL"];
+const vercelPostgresUrl = process.env["POSTGRES_PRISMA_URL"];
+
+// Use the SQLite URL for local development
+// For Vercel: Use POSTGRES_PRISMA_URL (auto-created by Vercel) or DATABASE_URL
+// For local dev: Use SQLite database file
+const finalDatabaseUrl = databaseUrl || "file:./dev.db";
+
+// Only throw error if we're on Vercel or in production build
+// Local development can skip validation if DATABASE_URL is not set (for schema validation only)
+const isVercel = process.env.VERCEL === "1";
+const isCI = process.env.CI === "true";
+
+if (!finalDatabaseUrl && (isVercel || isCI)) {
+  throw new Error(
+    "DATABASE_URL or POSTGRES_PRISMA_URL environment variable is required.\n" +
+    "For Vercel: These are automatically set when you create a Postgres database.\n" +
+    "If missing, check: Vercel Dashboard → Storage → Postgres → Ensure database exists\n" +
+    "Or manually set DATABASE_URL to your PostgreSQL connection string."
+  );
+}
+
+// Use a dummy URL for local schema validation if not set (won't be used for actual DB operations)
+const urlForConfig = finalDatabaseUrl || "file:./dev.db";
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: urlForConfig,
   },
 });

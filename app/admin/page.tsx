@@ -3,6 +3,9 @@ import { getAnalyticsSummary } from "@/lib/analytics";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
 
+// Force dynamic rendering - this page requires database access
+export const dynamic = "force-dynamic";
+
 // Simple admin check - in production, use proper role-based access
 const ADMIN_EMAILS = process.env.ADMIN_EMAILS?.split(",") || [];
 

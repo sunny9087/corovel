@@ -1,4 +1,6 @@
 import { requireAuth } from "@/lib/auth-utils";
+
+export const dynamic = "force-dynamic";
 import { getActiveTasks, getUserCompletedTasks } from "@/lib/tasks";
 import TaskCard from "@/components/TaskCard";
 import Sidebar from "@/components/Sidebar";

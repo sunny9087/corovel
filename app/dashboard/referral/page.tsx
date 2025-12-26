@@ -1,4 +1,6 @@
 import { requireAuth } from "@/lib/auth-utils";
+
+export const dynamic = "force-dynamic";
 import Sidebar from "@/components/Sidebar";
 import ReferralCodeDisplay from "@/components/ReferralCodeDisplay";
 

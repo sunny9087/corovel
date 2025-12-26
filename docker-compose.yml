@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: crek_dev
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "55432:5432"
+
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      DATABASE_URL: "${DATABASE_URL}"
+      NEXTAUTH_URL: "${NEXTAUTH_URL}"
+      NEXTAUTH_SECRET: "${NEXTAUTH_SECRET}"
+      SESSION_SECRET: "${SESSION_SECRET}"
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD-SHELL","curl -f http://localhost:3001 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:

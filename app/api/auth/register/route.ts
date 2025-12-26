@@ -6,6 +6,8 @@ import { requireCsrfToken } from "@/lib/csrf";
 import { sendVerificationEmail } from "@/lib/email";
 import { trackEvent } from "@/lib/analytics";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting
