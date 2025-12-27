@@ -2,7 +2,7 @@
  * Seed default tasks into the database
  * Run with: npx tsx scripts/seed-tasks.ts
  */
-import { initializeTasks } from "../lib/tasks";
+import { initializeTasks } from "../lib/tasks.js";
 
 async function main() {
   console.log("Seeding tasks...");

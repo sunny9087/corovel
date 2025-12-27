@@ -4,18 +4,13 @@ import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
 // Get DATABASE_URL from environment
-// For Vercel: Use POSTGRES_PRISMA_URL (auto-created by Vercel) or DATABASE_URL
-// For local dev: Use DATABASE_URL from .env file (can be PostgreSQL connection string for testing)
 const databaseUrl = process.env["DATABASE_URL"];
 const vercelPostgresUrl = process.env["POSTGRES_PRISMA_URL"];
 
-// Use the SQLite URL for local development
-// For Vercel: Use POSTGRES_PRISMA_URL (auto-created by Vercel) or DATABASE_URL
-// For local dev: Use SQLite database file
-const finalDatabaseUrl = databaseUrl || "file:./dev.db";
+// Use the Vercel Postgres URL if available, otherwise use DATABASE_URL
+const finalDatabaseUrl = vercelPostgresUrl || databaseUrl;
 
 // Only throw error if we're on Vercel or in production build
-// Local development can skip validation if DATABASE_URL is not set (for schema validation only)
 const isVercel = process.env.VERCEL === "1";
 const isCI = process.env.CI === "true";
 
@@ -29,7 +24,8 @@ if (!finalDatabaseUrl && (isVercel || isCI)) {
 }
 
 // Use a dummy URL for local schema validation if not set (won't be used for actual DB operations)
-const urlForConfig = finalDatabaseUrl || "file:./dev.db";
+// Must be PostgreSQL format for schema validation
+const urlForConfig = finalDatabaseUrl || "postgresql://user:pass@localhost:5432/db";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

@@ -12,8 +12,8 @@ function getEnvVar(key: string, defaultValue?: string): string {
 }
 
 export const env = {
-  // Database
-  DATABASE_URL: getEnvVar("DATABASE_URL", "file:./dev.db"),
+  // Database - PostgreSQL connection string (required)
+  DATABASE_URL: getEnvVar("DATABASE_URL"),
   
   // Application
   NODE_ENV: process.env.NODE_ENV || "development",
