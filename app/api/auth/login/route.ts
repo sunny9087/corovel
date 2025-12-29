@@ -52,7 +52,17 @@ export async function POST(request: NextRequest) {
 
     // Verify user exists and password is correct
     // Use same error message to prevent user enumeration
-    const user = await getUserByEmail(email);
+    let user;
+    try {
+      user = await getUserByEmail(email);
+    } catch (dbError) {
+      console.error("Database error in getUserByEmail:", dbError);
+      return NextResponse.json(
+        { error: "Database connection failed. Please try again." },
+        { status: 500 }
+      );
+    }
+    
     if (!user) {
       // Add delay to prevent timing attacks
       await new Promise((resolve) => setTimeout(resolve, 100));

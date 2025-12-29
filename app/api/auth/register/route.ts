@@ -51,7 +51,17 @@ export async function POST(request: NextRequest) {
     const { email, password, referralCode } = validationResult.data;
 
     // Check if user exists (don't reveal if email exists)
-    const existingUser = await getUserByEmail(email);
+    let existingUser;
+    try {
+      existingUser = await getUserByEmail(email);
+    } catch (dbError) {
+      console.error("Database error in getUserByEmail:", dbError);
+      return NextResponse.json(
+        { error: "Database connection failed. Please try again." },
+        { status: 500 }
+      );
+    }
+    
     if (existingUser) {
       return NextResponse.json(
         { error: "A user with this email already exists" },
@@ -74,13 +84,29 @@ export async function POST(request: NextRequest) {
 
     // Create user
     const passwordHash = await hashPassword(password);
-    const { user, verificationToken } = await createUser(email, passwordHash, validReferralCode);
+    let user, verificationToken;
+    try {
+      const result = await createUser(email, passwordHash, validReferralCode);
+      user = result.user;
+      verificationToken = result.verificationToken;
+    } catch (dbError) {
+      console.error("Database error in createUser:", dbError);
+      return NextResponse.json(
+        { error: "Failed to create user. Please try again." },
+        { status: 500 }
+      );
+    }
 
     // Track signup event
-    await trackEvent("signup", user.id, {
-      email: user.email,
-      hasReferral: !!validReferralCode,
-    });
+    try {
+      await trackEvent("signup", user.id, {
+        email: user.email,
+        hasReferral: !!validReferralCode,
+      });
+    } catch (trackError) {
+      console.error("Error tracking signup:", trackError);
+      // Don't fail if tracking fails
+    }
 
     // Send verification email
     try {
