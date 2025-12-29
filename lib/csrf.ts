@@ -25,33 +25,13 @@ export async function getCsrfToken(): Promise<string> {
     token = generateCsrfToken();
     const isProduction = process.env.NODE_ENV === "production";
     
-    const cookieOptions: {
-      httpOnly: boolean;
-      secure: boolean;
-      sameSite: "lax" | "strict" | "none";
-      maxAge: number;
-      path: string;
-      domain?: string;
-    } = {
+    cookieStore.set(CSRF_COOKIE_NAME, token, {
       httpOnly: false,
       secure: isProduction,
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
-    };
-    
-    if (isProduction && process.env.APP_URL) {
-      try {
-        const url = new URL(process.env.APP_URL);
-        if (url.hostname.includes('corovel.com')) {
-          cookieOptions.domain = '.corovel.com';
-        }
-      } catch (e) {
-        console.error('Error parsing APP_URL for cookie domain:', e);
-      }
-    }
-    
-    cookieStore.set(CSRF_COOKIE_NAME, token, cookieOptions);
+    });
   }
   
   return token;

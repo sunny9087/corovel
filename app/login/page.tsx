@@ -54,8 +54,10 @@ function LoginForm() {
       } else {
         setError(data.error || "Login failed");
       }
-    } catch {
-      setError("An error occurred. Please try again.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "An error occurred. Please try again.";
+      console.error("Login error:", error);
+      setError(message);
     } finally {
       setLoading(false);
     }

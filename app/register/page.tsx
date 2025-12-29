@@ -60,8 +60,10 @@ function RegisterForm() {
       } else {
         setError(data.error || "Registration failed");
       }
-    } catch {
-      setError("An error occurred. Please try again.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "An error occurred. Please try again.";
+      console.error("Register error:", error);
+      setError(message);
     } finally {
       setLoading(false);
     }
