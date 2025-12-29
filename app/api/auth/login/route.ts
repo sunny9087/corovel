@@ -11,14 +11,19 @@ export const dynamic = "force-dynamic";
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting
-    const identifier = getRateLimitKey(request);
-    const { success } = await authRateLimiter.limit(identifier);
-    
-    if (!success) {
-      return NextResponse.json(
-        { error: "Too many requests. Please try again later." },
-        { status: 429 }
-      );
+    try {
+      const identifier = getRateLimitKey(request);
+      const { success } = await authRateLimiter.limit(identifier);
+      
+      if (!success) {
+        return NextResponse.json(
+          { error: "Too many requests. Please try again later." },
+          { status: 429 }
+        );
+      }
+    } catch (rateLimitError) {
+      console.error("Rate limit check failed:", rateLimitError);
+      // Continue without rate limiting if it fails
     }
 
     // CSRF protection
@@ -91,6 +96,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Login error:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
     return NextResponse.json(
       { error: "Login failed. Please try again." },
       { status: 500 }

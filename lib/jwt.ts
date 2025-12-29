@@ -50,13 +50,29 @@ export async function createSession(userId: string): Promise<void> {
   const token = await createSessionToken(userId);
   const cookieStore = await cookies();
   
-  cookieStore.set(SESSION_COOKIE_NAME, token, {
+  const isProduction = env.NODE_ENV === "production";
+  const cookieOptions: any = {
     httpOnly: true,
-    secure: env.NODE_ENV === "production",
+    secure: isProduction,
     sameSite: "lax",
     maxAge: SESSION_DURATION,
     path: "/",
-  });
+  };
+  
+  // In production, set domain to allow subdomains
+  if (isProduction && env.APP_URL) {
+    try {
+      const url = new URL(env.APP_URL);
+      // Set domain to .corovel.com to work with www.corovel.com and corovel.com
+      if (url.hostname.includes('corovel.com')) {
+        cookieOptions.domain = '.corovel.com';
+      }
+    } catch (e) {
+      console.error('Error parsing APP_URL for cookie domain:', e);
+    }
+  }
+  
+  cookieStore.set(SESSION_COOKIE_NAME, token, cookieOptions);
 }
 
 /**

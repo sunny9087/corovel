@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { fetchWithCsrf } from "@/lib/csrf-client";
 import OAuthButtons from "@/components/OAuthButtons";
 
@@ -65,6 +66,9 @@ function LoginForm() {
       <div className="max-w-md w-full premium-card rounded-xl p-8">
         <div className="premium-card-content">
           <div className="text-center mb-6">
+            <div className="flex justify-center mb-4">
+              <Image src="/corovel-logo.png" alt="Corovel Logo" width={64} height={64} className="rounded-xl" />
+            </div>
             <h1 className="text-3xl font-bold text-[#1F2937] mb-2">Login</h1>
             <p className="text-[#6B7280]">Welcome back to Corovel</p>
           </div>

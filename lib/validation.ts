@@ -3,12 +3,98 @@
  */
 import { z } from "zod";
 
-// Email validation
+// List of common disposable/temporary email domains
+const DISPOSABLE_EMAIL_DOMAINS = [
+  "10minutemail.com",
+  "tempmail.com",
+  "guerrillamail.com",
+  "mailinator.com",
+  "throwaway.email",
+  "temp-mail.org",
+  "yopmail.com",
+  "getnada.com",
+  "mohmal.com",
+  "fakeinbox.com",
+  "sharklasers.com",
+  "trashmail.com",
+];
+
+// Enhanced email validation
+function isValidEmailFormat(email: string): boolean {
+  // Basic format check
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return false;
+  }
+
+  // Check for valid domain structure (at least one dot after @)
+  const parts = email.split("@");
+  if (parts.length !== 2) return false;
+  
+  const domain = parts[1].toLowerCase();
+  
+  // Reject if domain doesn't have a TLD (like .com, .org, etc.)
+  if (!domain.includes(".")) return false;
+  
+  // Reject if TLD is too short (less than 2 chars) or too long (more than 6 chars)
+  const domainParts = domain.split(".");
+  const tld = domainParts[domainParts.length - 1];
+  if (tld.length < 2 || tld.length > 6) return false;
+  
+  // Reject common fake patterns
+  const fakePatterns = [
+    /^test\d*@/i,
+    /^fake\d*@/i,
+    /^example\d*@/i,
+    /^sample\d*@/i,
+    /^dummy\d*@/i,
+    /@test\d*\./i,
+    /@fake\d*\./i,
+    /@example\d*\./i,
+    /@sample\d*\./i,
+    /@dummy\d*\./i,
+    /@localhost/i,
+    /@127\.0\.0\.1/i,
+  ];
+  
+  if (fakePatterns.some(pattern => pattern.test(email))) {
+    return false;
+  }
+  
+  // Reject disposable email domains
+  if (DISPOSABLE_EMAIL_DOMAINS.includes(domain)) {
+    return false;
+  }
+  
+  // Additional checks
+  // Reject domains that look suspicious (all numbers, too many dots, etc.)
+  if (/^\d+$/.test(domainParts[0])) return false; // Domain part is all numbers
+  if (domain.split(".").length > 5) return false; // Too many subdomains
+  
+  // Reject if domain part before TLD is empty or too short
+  if (domainParts.length < 2 || domainParts[domainParts.length - 2].length < 2) {
+    return false;
+  }
+  
+  return true;
+}
+
+// Enhanced email validation with custom refinement
 export const emailSchema = z
   .string()
-  .email("Invalid email address")
   .toLowerCase()
-  .trim();
+  .trim()
+  .email("Invalid email format")
+  .refine((email) => isValidEmailFormat(email), {
+    message: "Please use a valid email address. Disposable and fake email addresses are not allowed.",
+  })
+  .refine((email) => {
+    const domain = email.split("@")[1];
+    // Block domains that don't have proper structure
+    return domain && domain.includes(".") && domain.split(".").length >= 2;
+  }, {
+    message: "Invalid email domain",
+  });
 
 // Password validation - stronger requirements
 export const passwordSchema = z

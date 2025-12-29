@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import LogoutButton from "./LogoutButton";
 
@@ -19,8 +20,8 @@ export default function Sidebar() {
     <aside className="w-64 bg-[#1F2937] min-h-screen fixed left-0 top-0 flex flex-col border-r border-[#374151]">
       {/* Logo */}
       <div className="p-6 border-b border-[#374151]">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <span>✨</span>
+        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <Image src="/corovel-logo.png" alt="Corovel Logo" width={36} height={36} className="rounded-lg" />
           Corovel
         </h1>
         <p className="text-xs text-[#9CA3AF] mt-1">Habit Building</p>

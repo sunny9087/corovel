@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { fetchWithCsrf } from "@/lib/csrf-client";
 
 function ResetPasswordForm() {
@@ -66,7 +67,12 @@ function ResetPasswordForm() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-2xl font-bold text-center mb-6">Reset Password</h1>
+          <div className="text-center mb-6">
+            <div className="flex justify-center mb-4">
+              <Image src="/corovel-logo.png" alt="Corovel Logo" width={64} height={64} className="rounded-xl" />
+            </div>
+            <h1 className="text-2xl font-bold">Reset Password</h1>
+          </div>
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
               {error}
@@ -83,7 +89,12 @@ function ResetPasswordForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold text-center mb-6">Reset Password</h1>
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-4">
+            <Image src="/corovel-logo.png" alt="Corovel Logo" width={64} height={64} className="rounded-xl" />
+          </div>
+          <h1 className="text-2xl font-bold">Reset Password</h1>
+        </div>
 
         {success && (
           <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
