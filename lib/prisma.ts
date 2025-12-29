@@ -50,8 +50,11 @@ function getPrismaClient(): PrismaClient {
   }
 
   // Create PostgreSQL connection pool
+  // Ensure SSL works in production environments (e.g., Supabase pooler)
+  // Some providers present cert chains that require disabling strict validation
   const pool = new Pool({
     connectionString: databaseUrl,
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
   });
 
   // Create Prisma adapter
