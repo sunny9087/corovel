@@ -51,7 +51,15 @@ export async function createSession(userId: string): Promise<void> {
   const cookieStore = await cookies();
   
   const isProduction = env.NODE_ENV === "production";
-  const cookieOptions: any = {
+  
+  const cookieOptions: {
+    httpOnly: boolean;
+    secure: boolean;
+    sameSite: "lax" | "strict" | "none";
+    maxAge: number;
+    path: string;
+    domain?: string;
+  } = {
     httpOnly: true,
     secure: isProduction,
     sameSite: "lax",
@@ -59,11 +67,9 @@ export async function createSession(userId: string): Promise<void> {
     path: "/",
   };
   
-  // In production, set domain to allow subdomains
   if (isProduction && env.APP_URL) {
     try {
       const url = new URL(env.APP_URL);
-      // Set domain to .corovel.com to work with www.corovel.com and corovel.com
       if (url.hostname.includes('corovel.com')) {
         cookieOptions.domain = '.corovel.com';
       }

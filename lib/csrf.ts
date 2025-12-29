@@ -24,19 +24,25 @@ export async function getCsrfToken(): Promise<string> {
   if (!token) {
     token = generateCsrfToken();
     const isProduction = process.env.NODE_ENV === "production";
-    const cookieOptions: any = {
-      httpOnly: false, // Needs to be readable by JavaScript
+    
+    const cookieOptions: {
+      httpOnly: boolean;
+      secure: boolean;
+      sameSite: "lax" | "strict" | "none";
+      maxAge: number;
+      path: string;
+      domain?: string;
+    } = {
+      httpOnly: false,
       secure: isProduction,
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     };
     
-    // In production, set domain to allow subdomains
     if (isProduction && process.env.APP_URL) {
       try {
         const url = new URL(process.env.APP_URL);
-        // Set domain to .corovel.com to work with www.corovel.com and corovel.com
         if (url.hostname.includes('corovel.com')) {
           cookieOptions.domain = '.corovel.com';
         }
