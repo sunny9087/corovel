@@ -87,7 +87,7 @@ function LoginForm() {
         } else {
           setError(data.error || "Failed to resend verification email.");
         }
-      } catch (err) {
+      } catch {
         setError("Failed to resend verification email.");
       } finally {
         setLoading(false);
