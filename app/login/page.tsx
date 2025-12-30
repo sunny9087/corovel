@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -11,6 +10,7 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showResend, setShowResend] = useState(false);
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -53,6 +53,12 @@ function LoginForm() {
         router.refresh();
       } else {
         setError(data.error || "Login failed");
+        // If error is about email verification, show resend link
+        if ((data.error || "").toLowerCase().includes("verify your email")) {
+          setShowResend(true);
+        } else {
+          setShowResend(false);
+        }
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "An error occurred. Please try again.";
@@ -61,7 +67,43 @@ function LoginForm() {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  function ResendVerification({ email, setSuccess, setError }: { email: string, setSuccess: (msg: string) => void, setError: (msg: string) => void }) {
+    const [loading, setLoading] = useState(false);
+    const handleResend = async () => {
+      setLoading(true);
+      setError("");
+      setSuccess("");
+      try {
+        const res = await fetchWithCsrf("/api/auth/resend-verification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email.trim().toLowerCase() }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setSuccess("Verification email sent! Please check your inbox.");
+        } else {
+          setError(data.error || "Failed to resend verification email.");
+        }
+      } catch (err) {
+        setError("Failed to resend verification email.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    return (
+      <button
+        type="button"
+        className="text-[#6366F1] hover:text-[#8B5CF6] font-medium underline"
+        onClick={handleResend}
+        disabled={loading}
+      >
+        {loading ? "Sending..." : "Resend verification email"}
+      </button>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center gradient-mesh px-4">
@@ -74,19 +116,21 @@ function LoginForm() {
             <h1 className="text-3xl font-bold text-[#1F2937] mb-2">Login</h1>
             <p className="text-[#6B7280]">Welcome back to Corovel</p>
           </div>
-
           {success && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
               {success}
             </div>
           )}
-
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
               {error}
+              {showResend && (
+                <div className="mt-2">
+                  <ResendVerification email={email} setSuccess={setSuccess} setError={setError} />
+                </div>
+              )}
             </div>
           )}
-
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-[#1F2937] mb-2">
@@ -102,7 +146,6 @@ function LoginForm() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-[#6366F1] bg-white transition-all"
               />
             </div>
-
             <div>
               <label htmlFor="password" className="block text-sm font-semibold text-[#1F2937] mb-2">
                 Password
@@ -117,7 +160,6 @@ function LoginForm() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-[#6366F1] bg-white transition-all"
               />
             </div>
-
             <button
               type="submit"
               disabled={loading}
@@ -133,9 +175,7 @@ function LoginForm() {
               )}
             </button>
           </form>
-
           <OAuthButtons />
-
           <div className="mt-6 space-y-2">
             <p className="text-center text-sm text-[#6B7280]">
               Don&apos;t have an account?{" "}
