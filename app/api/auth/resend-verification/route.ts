@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email is already verified." }, { status: 400 });
     }
     // Generate new verification token
-    const token = await generateVerificationToken(user.id);
+    const token = await generateVerificationToken();
     await sendVerificationEmail(email, token);
     return NextResponse.json({ success: true, message: "Verification email sent." });
   } catch (error) {
