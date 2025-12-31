@@ -79,13 +79,9 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-    // Block login if email is not verified
-    if (!user.emailVerified) {
-      return NextResponse.json(
-        { error: "Please verify your email before logging in. Check your inbox for a verification link or request a new one." },
-        { status: 401 }
-      );
-    }
+    // Note: Email verification is recommended but not required for login
+    // Users can still access the dashboard but may have limited features
+    // until they verify their email
 
     const isValidPassword = await verifyPassword(password, user.passwordHash);
     if (!isValidPassword) {

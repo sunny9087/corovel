@@ -53,10 +53,11 @@ function RegisterForm() {
       const data = await res.json();
 
       if (res.ok) {
-        setSuccess(data.message || "Registration successful! Please check your email to verify your account.");
+        setSuccess(data.message || "Registration successful! Redirecting to dashboard...");
+        // Redirect to dashboard immediately since user is now logged in
         setTimeout(() => {
-          router.push("/login");
-        }, 3000);
+          router.push(data.redirect || "/dashboard");
+        }, 1000);
       } else {
         setError(data.error || "Registration failed");
       }

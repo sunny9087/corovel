@@ -5,6 +5,7 @@ import { authRateLimiter, getRateLimitKey } from "@/lib/rate-limit";
 import { requireCsrfToken } from "@/lib/csrf";
 import { sendVerificationEmail } from "@/lib/email";
 import { trackEvent } from "@/lib/analytics";
+import { createSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -116,13 +117,17 @@ export async function POST(request: NextRequest) {
       // Don't fail registration if email fails
     }
 
+    // Auto-login: Create session for the new user
+    await createSession(user.id);
+
     return NextResponse.json({
       success: true,
-      message: "Registration successful. Please check your email to verify your account.",
+      message: "Registration successful! You are now logged in.",
       user: {
         id: user.id,
         email: user.email,
       },
+      redirect: "/dashboard",
     });
   } catch (error) {
     console.error("Registration error:", error);
