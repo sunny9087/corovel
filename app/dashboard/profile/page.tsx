@@ -9,14 +9,14 @@ export default async function ProfilePage() {
   return (
     <div className="min-h-screen gradient-mesh">
       <Sidebar />
-      <div className="ml-64">
+      <div className="lg:ml-64">
         <header className="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-gray-200 shadow-sm">
-          <div className="px-8 py-4">
-            <h2 className="text-2xl font-bold text-[#1F2937]">Profile</h2>
-            <p className="text-sm text-[#6B7280] mt-1">Your account information</p>
+          <div className="px-4 lg:px-8 py-4">
+            <h2 className="text-2xl font-bold text-[#1F2937] ml-12 lg:ml-0">Profile</h2>
+            <p className="text-sm text-[#6B7280] mt-1 ml-12 lg:ml-0">Your account information</p>
           </div>
         </header>
-        <main className="p-8">
+        <main className="p-4 lg:p-8">
           <div className="premium-card rounded-xl p-8 max-w-2xl">
             <div className="premium-card-content">
               <h3 className="text-xl font-semibold text-[#1F2937] mb-6">Account Details</h3>

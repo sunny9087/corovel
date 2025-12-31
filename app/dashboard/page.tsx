@@ -79,12 +79,12 @@ export default async function DashboardPage() {
     <div className="min-h-screen gradient-mesh">
       <Sidebar />
       
-      {/* Main Content */}
-      <div className="ml-64">
+      {/* Main Content - responsive margin for sidebar */}
+      <div className="lg:ml-64">
         {/* Header */}
         <header className="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-gray-200 shadow-sm">
-          <div className="px-8 py-4 flex items-center justify-between">
-            <div>
+          <div className="px-4 lg:px-8 py-4 flex items-center justify-between">
+            <div className="ml-12 lg:ml-0">
               <h2 className="text-2xl font-bold text-[#1F2937]">Dashboard</h2>
               <p className="text-sm text-[#6B7280] mt-1">Welcome back! Build your habits today</p>
             </div>
@@ -94,7 +94,7 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        <main className="p-8">
+        <main className="p-4 lg:p-8">
           {/* Retention Hooks */}
           <div className="mb-12">
             <RetentionHooks
