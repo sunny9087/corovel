@@ -18,8 +18,15 @@ export const metadata: Metadata = {
   title: "Corovel - Build Habits Through Daily Actions",
   description: "Build habits through simple daily actions. Earn points and track your progress.",
   icons: {
-    icon: "/corovel-logo.png",
-    apple: "/corovel-logo.png",
+    icon: [
+      { url: "/corovel-logo.png", type: "image/png" },
+      { url: "/corovel-logo.png", sizes: "32x32", type: "image/png" },
+      { url: "/corovel-logo.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/corovel-logo.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/corovel-logo.png",
   },
 };
 
