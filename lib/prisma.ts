@@ -13,12 +13,10 @@ function getDatabaseUrl(): string {
   const databaseUrl = process.env.DATABASE_URL || "";
   const vercelUrl = process.env.POSTGRES_PRISMA_URL || "";
 
-  // IMPORTANT: In development, prefer DATABASE_URL so local .env wins even if the
-  // machine has Vercel POSTGRES_* vars set.
-  let url =
-    process.env.NODE_ENV === "development"
-      ? databaseUrl || vercelUrl
-      : vercelUrl || databaseUrl;
+  // IMPORTANT: Prefer DATABASE_URL whenever it's present.
+  // Vercel can inject POSTGRES_PRISMA_URL automatically, which can accidentally
+  // override Supabase and point Prisma at the wrong database.
+  let url = databaseUrl || vercelUrl;
   
   // For Supabase connections, avoid encoding SSL behavior in the URL.
   // We control TLS via the pg Pool `ssl` option so we can explicitly set
