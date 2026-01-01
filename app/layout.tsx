@@ -15,8 +15,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Corovel - Build Habits Through Daily Actions",
-  description: "Build habits through simple daily actions. Earn points and track your progress.",
+  title: "Corovel - Your Personal Operating System",
+  description: "Turn daily actions into long-term clarity. A system for people who are building something.",
   icons: {
     icon: [
       { url: "/corovel-logo.png", type: "image/png" },

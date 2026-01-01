@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchWithCsrf } from "@/lib/csrf-client";
 
+type TaskCategory = "focus" | "learning" | "output" | "reflection" | "energy" | "system";
+
 interface TaskCardProps {
   id: string;
   name: string;
@@ -12,44 +14,69 @@ interface TaskCardProps {
   isCompleted: boolean;
   isCompletedToday: boolean;
   canComplete: boolean;
+  category?: TaskCategory;
+  description?: string;
 }
 
-const getTaskIcon = (type: string, isCompleted: boolean) => {
-  if (isCompleted) {
-    return (
-      <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-      </svg>
-    );
-  }
+const getCategoryStyle = (category: TaskCategory) => {
+  const styles: Record<TaskCategory, { bg: string; text: string; border: string; icon: string }> = {
+    focus: { bg: "bg-indigo-50", text: "text-indigo-600", border: "border-indigo-200", icon: "text-indigo-500" },
+    learning: { bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-200", icon: "text-blue-500" },
+    output: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", icon: "text-emerald-500" },
+    reflection: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200", icon: "text-amber-500" },
+    energy: { bg: "bg-rose-50", text: "text-rose-600", border: "border-rose-200", icon: "text-rose-500" },
+    system: { bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-200", icon: "text-gray-500" },
+  };
+  return styles[category] || styles.system;
+};
 
-  switch (type) {
-    case "daily":
+const getCategoryIcon = (category: TaskCategory) => {
+  switch (category) {
+    case "focus":
       return (
-        <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       );
-    case "one_time":
+    case "learning":
       return (
-        <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       );
-    case "weekly":
+    case "output":
       return (
-        <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+    case "reflection":
+      return (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+      );
+    case "energy":
+      return (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
       );
     default:
       return (
-        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       );
   }
 };
+
+const getCompletedIcon = () => (
+  <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+  </svg>
+);
 
 export default function TaskCard({
   id,
@@ -59,11 +86,16 @@ export default function TaskCard({
   isCompleted,
   isCompletedToday,
   canComplete,
+  category = "system",
+  description,
 }: TaskCardProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  
+  const categoryStyle = getCategoryStyle(category);
+  const isComplete = isCompleted || isCompletedToday;
 
   const handleComplete = async () => {
     if (!canComplete) return;
@@ -83,11 +115,11 @@ export default function TaskCard({
 
       if (res.ok) {
         setSuccess(true);
-        // Trigger page refresh to update points and leaderboard
+        // Trigger page refresh to update points and momentum
         router.refresh();
         setTimeout(() => setSuccess(false), 2000);
       } else {
-        setError(data.error || "Failed to complete task");
+        setError(data.error || "Failed to log action");
       }
     } catch {
       setError("An error occurred. Please try again.");
@@ -99,50 +131,62 @@ export default function TaskCard({
   const statusText =
     type === "daily"
       ? isCompletedToday
-        ? "Completed Today"
+        ? "Logged today"
         : "Available"
       : type === "weekly"
-      ? "Auto-Awarded"
+      ? "Auto-awarded"
       : isCompleted
-      ? "Completed"
+      ? "Complete"
       : "Available";
 
   return (
     <div
-      className={`premium-card rounded-xl p-6 transition-all duration-300 animate-fade-in bg-white shadow-sm hover:shadow-md ${
+      className={`rounded-xl p-4 md:p-5 transition-all duration-300 animate-fade-in border ${
+        isComplete 
+          ? `${categoryStyle.bg} ${categoryStyle.border} opacity-75` 
+          : "bg-white border-gray-100 hover:border-gray-200"
+      } ${
         canComplete && !loading
-          ? "hover:shadow-lg hover:scale-105 cursor-pointer"
-          : "opacity-75"
-      } ${success ? "task-complete-animation ring-2 ring-green-500" : ""} ${
-        isCompleted || isCompletedToday ? "ring-2 ring-green-200 bg-green-50/30" : ""
-      }`}
+          ? "hover:shadow-md cursor-pointer"
+          : ""
+      } ${success ? "ring-2 ring-green-500" : ""}`}
     >
-      <div className="premium-card-content">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <div className={`${isCompleted || isCompletedToday ? "text-green-400" : ""}`}>
-            {getTaskIcon(type, isCompleted || isCompletedToday)}
-          </div>
-          <div>
-            <h3 className="text-[#1F2937] font-semibold text-lg">{name}</h3>
-            <p className="text-[#6B7280] text-sm">{statusText}</p>
+      <div className="flex items-start gap-3">
+        {/* Icon */}
+        <div className={`flex-shrink-0 p-2 rounded-lg ${categoryStyle.bg}`}>
+          <div className={isComplete ? "text-green-500" : categoryStyle.icon}>
+            {isComplete ? getCompletedIcon() : getCategoryIcon(category)}
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-2xl font-bold gradient-text">+{points}</div>
-          <div className="text-xs text-[#6B7280]">points</div>
+        
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <h3 className={`font-medium text-sm md:text-base leading-tight ${isComplete ? "text-gray-500" : "text-[#1F2937]"}`}>
+            {name}
+          </h3>
+          {description && (
+            <p className="text-xs text-[#6B7280] mt-1 line-clamp-2">
+              {description}
+            </p>
+          )}
+          <div className="flex items-center gap-2 mt-2">
+            <span className={`text-xs px-2 py-0.5 rounded-full ${categoryStyle.bg} ${categoryStyle.text}`}>
+              +{points}
+            </span>
+            <span className="text-xs text-[#9CA3AF]">{statusText}</span>
+          </div>
         </div>
       </div>
 
       {error && (
-        <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+        <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm">
-          Task completed! You earned {points} points.
+        <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded-lg text-green-600 text-xs">
+          Action logged. +{points} momentum.
         </div>
       )}
 
@@ -150,25 +194,20 @@ export default function TaskCard({
         <button
           onClick={handleComplete}
           disabled={loading || !canComplete}
-          className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+          className={`w-full mt-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] ${
+            categoryStyle.bg
+          } ${categoryStyle.text} hover:opacity-80`}
         >
-          <span className="relative z-10 flex items-center justify-center gap-2">
-            {loading ? (
-              <>
-                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </>
-            ) : isCompletedToday ? (
-              "Already Completed"
-            ) : (
-              "Complete Task"
-            )}
-          </span>
-          {!loading && (
-            <span className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#6366F1] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Logging...
+            </span>
+          ) : (
+            "Log this action"
           )}
         </button>
       )}
@@ -177,37 +216,31 @@ export default function TaskCard({
         <button
           onClick={handleComplete}
           disabled={loading || !canComplete}
-          className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+          className={`w-full mt-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] ${
+            categoryStyle.bg
+          } ${categoryStyle.text} hover:opacity-80`}
         >
-          <span className="relative z-10 flex items-center justify-center gap-2">
-            {loading ? (
-              <>
-                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </>
-            ) : isCompleted ? (
-              "Already Completed"
-            ) : (
-              "Complete Task"
-            )}
-          </span>
-          {!loading && (
-            <span className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#6366F1] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Logging...
+            </span>
+          ) : (
+            "Complete setup"
           )}
         </button>
       )}
 
       {(type === "weekly" || type === "referral") && (
-        <div className="text-sm text-[#9CA3AF] text-center py-2">
+        <div className="mt-3 text-xs text-[#9CA3AF] text-center py-1">
           {type === "weekly"
-            ? "Awarded automatically when you complete 5 daily check-ins in a week"
-            : "Awarded automatically when someone signs up with your referral code"}
+            ? "Awarded when you log 5+ actions per week"
+            : "Awarded when someone joins with your code"}
         </div>
       )}
-      </div>
     </div>
   );
 }

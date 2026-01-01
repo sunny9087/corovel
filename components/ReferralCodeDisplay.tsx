@@ -17,13 +17,13 @@ export default function ReferralCodeDisplay({
   };
 
   return (
-    <div className="flex items-center gap-3 flex-wrap">
-      <code className="bg-[#1F2937] border border-[#374151] px-4 py-2 rounded-lg text-lg font-mono font-bold text-[#E5E7EB]">
+    <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+      <code className="bg-[#1F2937] border border-[#374151] px-3 md:px-4 py-2 rounded-lg text-sm md:text-lg font-mono font-bold text-[#E5E7EB]">
         {referralCode}
       </code>
       <button
         onClick={handleCopyLink}
-        className="btn-primary text-sm px-4 py-2"
+        className="btn-primary text-xs md:text-sm px-3 md:px-4 py-2 min-h-[44px]"
       >
         {copied ? "Copied!" : "Copy Link"}
       </button>

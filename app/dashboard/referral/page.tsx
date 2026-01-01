@@ -12,22 +12,22 @@ export default async function ReferralPage() {
       <Sidebar />
       <div className="lg:ml-64">
         <header className="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-gray-200 shadow-sm">
-          <div className="px-4 lg:px-8 py-4">
-            <h2 className="text-2xl font-bold text-[#1F2937] ml-12 lg:ml-0">Referral Program</h2>
-            <p className="text-sm text-[#6B7280] mt-1 ml-12 lg:ml-0">Share and earn rewards</p>
+          <div className="px-4 lg:px-8 py-3 md:py-4">
+            <h2 className="text-xl md:text-2xl font-bold text-[#1F2937] ml-12 lg:ml-0">Invite Others</h2>
+            <p className="text-xs md:text-sm text-[#6B7280] mt-1 ml-12 lg:ml-0">Share Corovel with others</p>
           </div>
         </header>
-        <main className="p-4 lg:p-8">
-          <div className="premium-card rounded-xl p-8 max-w-2xl">
+        <main className="p-3 md:p-4 lg:p-8">
+          <div className="premium-card rounded-xl p-4 md:p-8 max-w-2xl">
             <div className="premium-card-content">
-              <h3 className="text-xl font-semibold text-[#1F2937] mb-6">Your Referral Code</h3>
-              <div className="mb-6">
+              <h3 className="text-lg md:text-xl font-semibold text-[#1F2937] mb-4 md:mb-6">Your Invite Code</h3>
+              <div className="mb-4 md:mb-6">
                 <ReferralCodeDisplay referralCode={user.referralCode} />
               </div>
-              <div className="bg-gradient-to-r from-yellow-50 to-cyan-50 border border-gray-200 rounded-lg p-6">
-                <p className="text-sm text-[#1F2937] leading-relaxed">
-                  Share your referral code with friends! When someone signs up using your code,
-                  both you and your friend will receive <strong className="text-[#6366F1]">10 points</strong> (one-time reward).
+              <div className="bg-gradient-to-r from-yellow-50 to-cyan-50 border border-gray-200 rounded-lg p-4 md:p-6">
+                <p className="text-xs md:text-sm text-[#1F2937] leading-relaxed">
+                  Share your code with others. When someone joins using your code,
+                  both of you start with a progress boost.
                 </p>
               </div>
             </div>

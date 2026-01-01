@@ -8,9 +8,9 @@ import LogoutButton from "./LogoutButton";
 
 const menuItems = [
   { name: "Dashboard", href: "/dashboard", icon: "📊" },
-  { name: "Tasks", href: "/dashboard/tasks", icon: "✅" },
-  { name: "Leaderboard", href: "/dashboard/leaderboard", icon: "🏆" },
-  { name: "Referral", href: "/dashboard/referral", icon: "🔗" },
+  { name: "Daily Actions", href: "/dashboard/tasks", icon: "✅" },
+  { name: "Progress", href: "/dashboard/leaderboard", icon: "📈" },
+  { name: "Invite", href: "/dashboard/referral", icon: "🔗" },
   { name: "Profile", href: "/dashboard/profile", icon: "👤" },
 ];
 
@@ -58,7 +58,7 @@ export default function Sidebar() {
             <Image src="/corovel-logo.png" alt="Corovel Logo" width={36} height={36} className="rounded-lg" />
             Corovel
           </h1>
-          <p className="text-xs text-[#9CA3AF] mt-1">Habit Building</p>
+          <p className="text-xs text-[#9CA3AF] mt-1">Personal Operating System</p>
         </div>
 
         {/* Navigation */}

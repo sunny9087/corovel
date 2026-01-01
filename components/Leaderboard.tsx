@@ -55,18 +55,18 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="premium-card rounded-xl p-8 animate-fade-in">
+    <div className="premium-card rounded-xl p-4 md:p-8 animate-fade-in">
       <div className="premium-card-content">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-[#1F2937] flex items-center gap-2">
-          <svg className="w-5 h-5 text-[#6366F1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex items-center justify-between mb-4 md:mb-6">
+        <h2 className="text-lg md:text-xl font-semibold text-[#1F2937] flex items-center gap-2">
+          <svg className="w-4 h-4 md:w-5 md:h-5 text-[#6366F1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
           </svg>
-          Leaderboard
+          Progress Overview
         </h2>
         <button
           onClick={fetchLeaderboard}
-          className="text-sm text-[#6366F1] hover:text-[#8B5CF6] transition-smooth hover:scale-110 flex items-center gap-1"
+          className="text-xs md:text-sm text-[#6366F1] hover:text-[#8B5CF6] transition-smooth hover:scale-110 flex items-center gap-1 min-h-[44px] px-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -79,31 +79,31 @@ export default function Leaderboard() {
         {data.entries.map((entry, index) => (
           <div
             key={entry.userId}
-            className={`stagger-item flex items-center justify-between p-4 rounded-lg transition-all duration-300 hover:scale-[1.02] ${
+            className={`stagger-item flex items-center justify-between p-3 md:p-4 rounded-lg transition-all duration-300 hover:scale-[1.02] ${
               entry.isCurrentUser
                 ? "bg-gradient-to-r from-[#6366F1]/10 to-[#8B5CF6]/10 border-2 border-[#6366F1] shadow-md"
                 : "bg-gray-50 hover:bg-gray-100 border border-gray-200"
             }`}
             style={{ animationDelay: `${index * 0.05}s` }}
           >
-            <div className="flex items-center gap-3">
-              <div className="text-lg font-bold text-[#1F2937] w-8 flex items-center justify-center transition-transform hover:scale-110">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <div className="text-base md:text-lg font-bold text-[#1F2937] w-6 md:w-8 flex-shrink-0 flex items-center justify-center transition-transform hover:scale-110">
                 {getRankIcon(entry.rank)}
               </div>
-              <div>
-                <div className="text-[#1F2937] font-medium flex items-center gap-2">
-                  {entry.email}
+              <div className="min-w-0">
+                <div className="text-[#1F2937] font-medium flex items-center gap-1 md:gap-2 text-sm md:text-base">
+                  <span className="truncate max-w-[120px] md:max-w-none">{entry.email}</span>
                   {entry.isCurrentUser && (
-                    <span className="px-2 py-0.5 text-xs text-white bg-[#6366F1] rounded-full">
+                    <span className="px-1.5 md:px-2 py-0.5 text-xs text-white bg-[#6366F1] rounded-full flex-shrink-0">
                       You
                     </span>
                   )}
                 </div>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-lg font-bold text-[#6366F1] transition-transform hover:scale-110">{entry.points.toLocaleString()}</div>
-              <div className="text-xs text-[#6B7280]">points</div>
+            <div className="text-right flex-shrink-0">
+              <div className="text-base md:text-lg font-bold text-[#6366F1] transition-transform hover:scale-110">{entry.points.toLocaleString()}</div>
+              <div className="text-xs text-[#6B7280]">progress</div>
             </div>
           </div>
         ))}
@@ -127,15 +127,15 @@ export default function Leaderboard() {
                 <div className="text-lg font-bold gradient-text">
                   {data.userEntry.points.toLocaleString()}
                 </div>
-                <div className="text-xs text-[#9CA3AF]">points</div>
+                <div className="text-xs text-[#9CA3AF]">progress</div>
               </div>
             </div>
           </>
         )}
       </div>
 
-      <p className="text-xs text-[#6B7280] mt-6 text-center">
-        Top 10 users by total points
+      <p className="text-xs text-[#6B7280] mt-4 md:mt-6 text-center">
+        Top 10 users by progress
       </p>
       </div>
     </div>

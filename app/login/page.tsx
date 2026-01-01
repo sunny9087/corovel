@@ -106,15 +106,15 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center gradient-mesh px-4">
-      <div className="max-w-md w-full premium-card rounded-xl p-8">
+    <div className="min-h-screen flex items-center justify-center gradient-mesh px-4 py-8">
+      <div className="w-full max-w-md premium-card rounded-xl p-5 md:p-8">
         <div className="premium-card-content">
-          <div className="text-center mb-6">
-            <div className="flex justify-center mb-4">
-              <Image src="/corovel-logo.png" alt="Corovel Logo" width={64} height={64} className="rounded-xl" />
+          <div className="text-center mb-5 md:mb-6">
+            <div className="flex justify-center mb-3 md:mb-4">
+              <Image src="/corovel-logo.png" alt="Corovel Logo" width={48} height={48} className="rounded-xl md:w-16 md:h-16" />
             </div>
-            <h1 className="text-3xl font-bold text-[#1F2937] mb-2">Login</h1>
-            <p className="text-[#6B7280]">Welcome back to Corovel</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#1F2937] mb-1 md:mb-2">Sign In</h1>
+            <p className="text-sm md:text-base text-[#6B7280]">Continue to Corovel</p>
           </div>
           {success && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
@@ -131,9 +131,9 @@ function LoginForm() {
               )}
             </div>
           )}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-[#1F2937] mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-[#1F2937] mb-1.5 md:mb-2">
                 Email Address
               </label>
               <input
@@ -143,11 +143,11 @@ function LoginForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Enter your email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-[#6366F1] bg-white transition-all"
+                className="w-full px-3 md:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-[#6366F1] bg-white transition-all text-base"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-[#1F2937] mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-[#1F2937] mb-1.5 md:mb-2">
                 Password
               </label>
               <input
@@ -157,13 +157,13 @@ function LoginForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Enter your password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-[#6366F1] bg-white transition-all"
+                className="w-full px-3 md:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-[#6366F1] bg-white transition-all text-base"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-3 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-lg hover:from-[#8B5CF6] hover:to-[#6366F1] transition-all duration-300 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-lg hover:from-[#8B5CF6] hover:to-[#6366F1] transition-all duration-300 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[48px]"
             >
               {loading ? (
                 <>
@@ -176,20 +176,20 @@ function LoginForm() {
             </button>
           </form>
           <OAuthButtons />
-          <div className="mt-6 space-y-2">
-            <p className="text-center text-sm text-[#6B7280]">
+          <div className="mt-5 md:mt-6 space-y-2">
+            <p className="text-center text-xs md:text-sm text-[#6B7280]">
               Don&apos;t have an account?{" "}
               <Link href="/register" className="text-[#6366F1] hover:text-[#8B5CF6] font-medium">
                 Register
               </Link>
             </p>
-            <p className="text-center text-sm text-[#6B7280]">
+            <p className="text-center text-xs md:text-sm text-[#6B7280]">
               <Link href="/forgot-password" className="text-[#6366F1] hover:text-[#8B5CF6] font-medium">
                 Forgot password?
               </Link>
             </p>
-            <p className="text-center mt-4">
-              <Link href="/" className="text-sm text-[#6B7280] hover:text-[#1F2937]">
+            <p className="text-center mt-3 md:mt-4">
+              <Link href="/" className="text-xs md:text-sm text-[#6B7280] hover:text-[#1F2937]">
                 ← Back to home
               </Link>
             </p>

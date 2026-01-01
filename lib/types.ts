@@ -11,3 +11,6 @@ export interface ApiSuccess<T = unknown> {
   message?: string;
   data?: T;
 }
+
+// Re-export task types for convenience
+export type { TaskType, TaskCategory, TaskData } from "./tasks";
