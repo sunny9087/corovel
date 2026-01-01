@@ -3,6 +3,37 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+function normalizeSupabaseDatabaseUrl(inputUrl: string): string {
+  if (!inputUrl) return inputUrl;
+  if (!inputUrl.includes("supabase.co") && !inputUrl.includes("pooler.supabase.com")) return inputUrl;
+
+  try {
+    const urlObj = new URL(inputUrl);
+    urlObj.searchParams.delete("sslmode");
+
+    const isPooler = urlObj.hostname.includes("pooler.supabase.com");
+    const isDirectDbHost = /^db\.[a-z0-9-]+\.supabase\.co$/i.test(urlObj.hostname);
+
+    if (isPooler) {
+      if (!urlObj.searchParams.has("pgbouncer")) {
+        urlObj.searchParams.set("pgbouncer", "true");
+      }
+    }
+
+    if (isDirectDbHost) {
+      // If someone accidentally uses the pooler port with the direct host, fix it.
+      if (urlObj.port === "6543") {
+        urlObj.port = "5432";
+      }
+      urlObj.searchParams.delete("pgbouncer");
+    }
+
+    return urlObj.toString();
+  } catch {
+    return inputUrl;
+  }
+}
+
 // Get DATABASE_URL from environment
 const databaseUrl = process.env["DATABASE_URL"];
 const vercelPostgresUrl = process.env["POSTGRES_PRISMA_URL"];
@@ -11,6 +42,7 @@ const vercelPostgresUrl = process.env["POSTGRES_PRISMA_URL"];
 // POSTGRES_PRISMA_URL automatically, which can accidentally override the
 // intended database.
 const finalDatabaseUrl = databaseUrl || vercelPostgresUrl;
+const normalizedDatabaseUrl = finalDatabaseUrl ? normalizeSupabaseDatabaseUrl(finalDatabaseUrl) : finalDatabaseUrl;
 
 // Only throw error if we're on Vercel or in production build
 const isVercel = process.env.VERCEL === "1";
@@ -27,7 +59,7 @@ if (!finalDatabaseUrl && (isVercel || isCI)) {
 
 // Use a dummy URL for local schema validation if not set (won't be used for actual DB operations)
 // Must be PostgreSQL format for schema validation
-const urlForConfig = finalDatabaseUrl || "postgresql://user:pass@localhost:5432/db";
+const urlForConfig = normalizedDatabaseUrl || "postgresql://user:pass@localhost:5432/db";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

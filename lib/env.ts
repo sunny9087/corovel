@@ -13,7 +13,7 @@ function getEnvVar(key: string, defaultValue?: string): string {
 
 export const env = {
   // Database - PostgreSQL connection string (required)
-  DATABASE_URL: getEnvVar("DATABASE_URL"),
+  DATABASE_URL: getEnvVar("DATABASE_URL", process.env.POSTGRES_PRISMA_URL),
   
   // Application
   NODE_ENV: process.env.NODE_ENV || "development",

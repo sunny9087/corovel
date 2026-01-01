@@ -6,6 +6,81 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+export type DatabaseUrlInfo = {
+  host: string;
+  port: string;
+  user: string;
+  db: string;
+  isPooler: boolean;
+  hasPgbouncerParam: boolean;
+};
+
+function isSupabaseUrl(url: string): boolean {
+  return url.includes("supabase.co") || url.includes("pooler.supabase.com");
+}
+
+// Supabase supports two common Postgres endpoints:
+// - Direct:   db.<ref>.supabase.co:5432
+// - Pooler:   aws-0-<region>.pooler.supabase.com:6543 (recommended for serverless)
+// Mis-matching host/port is a frequent cause of Prisma P1001 (can't reach server).
+export function normalizeDatabaseUrl(inputUrl: string): string {
+  if (!inputUrl) return inputUrl;
+  if (!isSupabaseUrl(inputUrl)) return inputUrl;
+
+  try {
+    const urlObj = new URL(inputUrl);
+
+    // Remove sslmode if present (node-postgres doesn't use libpq parameters).
+    urlObj.searchParams.delete("sslmode");
+
+    const isPooler = urlObj.hostname.includes("pooler.supabase.com");
+    const isDirectDbHost = /^db\.[a-z0-9-]+\.supabase\.co$/i.test(urlObj.hostname);
+
+    if (isPooler) {
+      // Pooler commonly uses 6543, but do not override an explicitly provided port.
+      if (!urlObj.port) {
+        urlObj.port = "6543";
+      }
+
+      // Pooler works best with pgbouncer mode enabled.
+      if (!urlObj.searchParams.has("pgbouncer")) {
+        urlObj.searchParams.set("pgbouncer", "true");
+      }
+    }
+
+    if (isDirectDbHost) {
+      // Direct database listens on 5432.
+      if (urlObj.port === "6543") {
+        urlObj.port = "5432";
+      }
+
+      // pgbouncer is not applicable to the direct endpoint.
+      urlObj.searchParams.delete("pgbouncer");
+    }
+
+    return urlObj.toString();
+  } catch {
+    return inputUrl;
+  }
+}
+
+export function getDatabaseUrlInfo(inputUrl: string | undefined): DatabaseUrlInfo | null {
+  if (!inputUrl) return null;
+  try {
+    const urlObj = new URL(inputUrl);
+    return {
+      host: urlObj.hostname,
+      port: urlObj.port || "(default)",
+      user: urlObj.username || "(none)",
+      db: urlObj.pathname.replace("/", "") || "(none)",
+      isPooler: urlObj.hostname.includes("pooler.supabase.com"),
+      hasPgbouncerParam: urlObj.searchParams.get("pgbouncer") === "true",
+    };
+  } catch {
+    return null;
+  }
+}
+
 // Get database URL - use POSTGRES_PRISMA_URL (Vercel) or DATABASE_URL
 // For Vercel: Uses POSTGRES_PRISMA_URL (auto-set by Vercel)
 // For local: Uses DATABASE_URL from .env file (must be PostgreSQL connection string)
@@ -17,22 +92,9 @@ function getDatabaseUrl(): string {
   // Vercel can inject POSTGRES_PRISMA_URL automatically, which can accidentally
   // override Supabase and point Prisma at the wrong database.
   let url = databaseUrl || vercelUrl;
-  
-  // For Supabase connections, avoid encoding SSL behavior in the URL.
-  // We control TLS via the pg Pool `ssl` option so we can explicitly set
-  // `rejectUnauthorized: false` when needed.
-  if (url.includes("supabase.co") || url.includes("pooler.supabase.com")) {
-    const urlObj = new URL(url);
-    // Remove sslmode if present (node-postgres doesn't use libpq and this can
-    // cause confusing/overriding behavior).
-    urlObj.searchParams.delete("sslmode");
 
-    // Pooler connections work best with pgbouncer mode enabled
-    if (urlObj.hostname.includes("pooler.supabase.com") && !urlObj.searchParams.has("pgbouncer")) {
-      urlObj.searchParams.set("pgbouncer", "true");
-    }
-    url = urlObj.toString();
-  }
+  // Normalize Supabase URLs (pooler/direct ports, pgbouncer param, sslmode removal)
+  url = normalizeDatabaseUrl(url);
   
   return url;
 }
