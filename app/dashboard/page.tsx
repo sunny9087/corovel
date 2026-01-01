@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-utils";
-import { getActiveTasks, getUserCompletedTasks, getUserDailyStreak, getWeeklyChallengeProgress, getTaskCategory, getTaskDescription, TASK_CATEGORIES, TaskCategory } from "@/lib/tasks";
+import { getActiveTasks, getUserCompletedTasks, getUserDailyStreak, getWeeklyChallengeProgress, getTaskCategory, getTaskDescription, TaskCategory } from "@/lib/tasks";
 import { getUserRank } from "@/lib/leaderboard";
 import { getTotalUsers } from "@/lib/analytics";
 import TaskCard from "@/components/TaskCard";
