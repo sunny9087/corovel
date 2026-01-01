@@ -2,18 +2,6 @@ import { PrismaClient } from "./generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
-// CRITICAL: For Supabase connections with self-signed certificates
-// This must be set BEFORE any database connections are made
-// This is a known requirement for Supabase's connection pooler
-if (
-  process.env.NODE_ENV === "production" ||
-  process.env.VERCEL === "1" ||
-  (process.env.DATABASE_URL || "").includes("supabase") ||
-  (process.env.POSTGRES_PRISMA_URL || "").includes("supabase")
-) {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
-
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
@@ -22,15 +10,29 @@ const globalForPrisma = globalThis as unknown as {
 // For Vercel: Uses POSTGRES_PRISMA_URL (auto-set by Vercel)
 // For local: Uses DATABASE_URL from .env file (must be PostgreSQL connection string)
 function getDatabaseUrl(): string {
-  let url = process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL || "";
+  const databaseUrl = process.env.DATABASE_URL || "";
+  const vercelUrl = process.env.POSTGRES_PRISMA_URL || "";
+
+  // IMPORTANT: In development, prefer DATABASE_URL so local .env wins even if the
+  // machine has Vercel POSTGRES_* vars set.
+  let url =
+    process.env.NODE_ENV === "development"
+      ? databaseUrl || vercelUrl
+      : vercelUrl || databaseUrl;
   
-  // For Supabase connections, ensure sslmode is set to allow self-signed certs
+  // For Supabase connections, avoid encoding SSL behavior in the URL.
+  // We control TLS via the pg Pool `ssl` option so we can explicitly set
+  // `rejectUnauthorized: false` when needed.
   if (url.includes("supabase.co") || url.includes("pooler.supabase.com")) {
-    // Remove any existing sslmode parameter and add the correct one
     const urlObj = new URL(url);
+    // Remove sslmode if present (node-postgres doesn't use libpq and this can
+    // cause confusing/overriding behavior).
     urlObj.searchParams.delete("sslmode");
-    // Use 'require' instead of 'verify-full' to skip certificate verification
-    urlObj.searchParams.set("sslmode", "require");
+
+    // Pooler connections work best with pgbouncer mode enabled
+    if (urlObj.hostname.includes("pooler.supabase.com") && !urlObj.searchParams.has("pgbouncer")) {
+      urlObj.searchParams.set("pgbouncer", "true");
+    }
     url = urlObj.toString();
   }
   
@@ -94,13 +96,37 @@ function getPrismaClient(): PrismaClient {
     console.log("[Prisma] Connecting to database...");
     console.log("[Prisma] SSL enabled:", !!sslConfig);
     console.log("[Prisma] Is Supabase:", isSupabase);
+
+    try {
+      const urlObj = new URL(databaseUrl);
+      const source = process.env.DATABASE_URL
+        ? "DATABASE_URL"
+        : process.env.POSTGRES_PRISMA_URL
+          ? "POSTGRES_PRISMA_URL"
+          : "(none)";
+      console.log("[Prisma] URL source:", source);
+      console.log("[Prisma] Host:", urlObj.hostname);
+      console.log("[Prisma] Port:", urlObj.port || "(default)");
+      console.log("[Prisma] User:", urlObj.username || "(none)");
+      console.log("[Prisma] DB:", urlObj.pathname.replace("/", "") || "(none)");
+      if (urlObj.hostname.includes("pooler.supabase.com")) {
+        console.log("[Prisma] Pooler:", true);
+        console.log("[Prisma] pgbouncer param:", urlObj.searchParams.get("pgbouncer") || "(missing)");
+      }
+    } catch {
+      // ignore
+    }
   }
   
   const pool = new Pool({
     connectionString: databaseUrl,
     ssl: sslConfig,
-    // Add connection timeout for better error handling
-    connectionTimeoutMillis: 10000,
+    // Connection timeout - increased for cold starts
+    connectionTimeoutMillis: 30000,
+    // Idle timeout
+    idleTimeoutMillis: 30000,
+    // Max connections
+    max: 10,
   });
   
   // Handle pool errors

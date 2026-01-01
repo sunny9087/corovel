@@ -14,11 +14,15 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage() {
   const user = await requireAuth();
 
-  // Auto-seed tasks if none exist or if we have fewer than expected
+  // Auto-seed tasks only if database is empty (not on every request)
   const existingTasks = await getActiveTasks();
-  if (existingTasks.length < 10) {
-    const { initializeTasks } = await import("@/lib/tasks");
-    await initializeTasks();
+  if (existingTasks.length === 0) {
+    try {
+      const { initializeTasks } = await import("@/lib/tasks");
+      await initializeTasks();
+    } catch (e) {
+      console.error("Failed to initialize tasks:", e);
+    }
   }
 
   // Get tasks and user progress
