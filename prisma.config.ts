@@ -7,8 +7,10 @@ import { defineConfig } from "prisma/config";
 const databaseUrl = process.env["DATABASE_URL"];
 const vercelPostgresUrl = process.env["POSTGRES_PRISMA_URL"];
 
-// Use the Vercel Postgres URL if available, otherwise use DATABASE_URL
-const finalDatabaseUrl = vercelPostgresUrl || databaseUrl;
+// Prefer DATABASE_URL whenever it's set (e.g. Supabase). Vercel may inject
+// POSTGRES_PRISMA_URL automatically, which can accidentally override the
+// intended database.
+const finalDatabaseUrl = databaseUrl || vercelPostgresUrl;
 
 // Only throw error if we're on Vercel or in production build
 const isVercel = process.env.VERCEL === "1";
