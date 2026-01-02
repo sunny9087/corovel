@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getAnalyticsSummary } from "@/lib/analytics";
+import AnimatedNetwork from "@/components/AnimatedNetwork";
 
 export const dynamic = "force-dynamic";
 
@@ -20,8 +21,11 @@ export default async function TestAnalyticsPage() {
     });
 
     return (
-      <div className="min-h-screen bg-[#0B0F1A] p-8">
-        <div className="max-w-2xl mx-auto bg-[#111827] rounded-xl p-6 border border-[#1F2937]">
+      <div className="min-h-screen bg-[#0B0F1A] p-8 relative overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-20">
+          <AnimatedNetwork />
+        </div>
+        <div className="relative max-w-2xl mx-auto bg-[#111827] rounded-xl p-6 border border-[#1F2937] card-hover animate-fade-in">
           <h1 className="text-2xl font-bold text-[#E5E7EB] mb-4">Analytics Test</h1>
           <div className="space-y-4">
             <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
@@ -48,8 +52,11 @@ export default async function TestAnalyticsPage() {
     );
   } catch (error) {
     return (
-      <div className="min-h-screen bg-[#0B0F1A] p-8">
-        <div className="max-w-2xl mx-auto bg-[#111827] rounded-xl p-6 border border-red-500/30">
+      <div className="min-h-screen bg-[#0B0F1A] p-8 relative overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-20">
+          <AnimatedNetwork />
+        </div>
+        <div className="relative max-w-2xl mx-auto bg-[#111827] rounded-xl p-6 border border-red-500/30 animate-fade-in">
           <h1 className="text-2xl font-bold text-red-400 mb-4">Error</h1>
           <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
             <p className="text-red-400 font-medium">❌ Error occurred:</p>

@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/auth-utils";
 import { getAnalyticsSummary } from "@/lib/analytics";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
+import AnimatedNetwork from "@/components/AnimatedNetwork";
 
 // Force dynamic rendering - this page requires database access
 export const dynamic = "force-dynamic";
@@ -20,7 +21,10 @@ export default async function AdminPage() {
   const analytics = await getAnalyticsSummary();
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A]">
+    <div className="min-h-screen bg-[#0B0F1A] relative overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-20">
+        <AnimatedNetwork />
+      </div>
       {/* Header */}
       <header className="border-b border-[#1F2937] bg-[#111827]/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -42,11 +46,11 @@ export default async function AdminPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
         {/* Analytics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Users */}
-          <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937]">
+          <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937] card-hover">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-[#9CA3AF]">Total Users</h3>
               <svg className="w-5 h-5 text-[#6366F1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +61,7 @@ export default async function AdminPage() {
           </div>
 
           {/* Daily Active Users */}
-          <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937]">
+          <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937] card-hover">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-[#9CA3AF]">Daily Active Users</h3>
               <svg className="w-5 h-5 text-[#22D3EE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +73,7 @@ export default async function AdminPage() {
           </div>
 
           {/* Total Tasks Completed */}
-          <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937]">
+          <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937] card-hover">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-[#9CA3AF]">Tasks Completed</h3>
               <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,7 +85,7 @@ export default async function AdminPage() {
           </div>
 
           {/* Streak Continuation */}
-          <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937]">
+          <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937] card-hover">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-[#9CA3AF]">Streak Continuation</h3>
               <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +98,7 @@ export default async function AdminPage() {
         </div>
 
         {/* Info Section */}
-        <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937]">
+        <div className="bg-[#111827] rounded-xl p-6 border border-[#1F2937] card-hover">
           <h2 className="text-xl font-semibold text-[#E5E7EB] mb-4">About Analytics</h2>
           <p className="text-sm text-[#9CA3AF] leading-relaxed">
             This analytics dashboard tracks user behavior for validation purposes only. 

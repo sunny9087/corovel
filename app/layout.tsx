@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
+import AnimatedNetwork from "@/components/AnimatedNetwork";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,8 +39,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased relative overflow-x-hidden`}
       >
+        {/* Global animated background (subtle, non-interactive) */}
+        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 opacity-15">
+          <AnimatedNetwork />
+        </div>
         <Providers>{children}</Providers>
       </body>
     </html>

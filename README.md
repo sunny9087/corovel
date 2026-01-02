@@ -21,7 +21,7 @@ A Next.js-based points and rewards application with daily check-ins, referral pr
 
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
-- **Database**: SQLite with Prisma ORM
+- **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: JWT tokens with HTTP-only cookies
 - **Styling**: Tailwind CSS
 - **Validation**: Zod
@@ -51,7 +51,8 @@ Create a `.env` file in the root directory:
 
 ```env
 # Database
-DATABASE_URL="file:./dev.db"
+# Example (Supabase / hosted Postgres)
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DB?sslmode=require"
 
 # Application
 APP_URL="http://localhost:3000"
@@ -93,7 +94,7 @@ npm run dev
 
 ### Required
 
-- `DATABASE_URL` - SQLite database file path (e.g., `file:./dev.db`)
+- `DATABASE_URL` - PostgreSQL connection string
 - `SESSION_SECRET` - Secret key for JWT tokens (min 32 chars in production)
 
 ### Optional

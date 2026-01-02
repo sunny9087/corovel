@@ -1,19 +1,21 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
-import { getLeaderboardWithUser } from "@/lib/leaderboard";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const user = await requireAuth();
-    const leaderboard = await getLeaderboardWithUser(user.id, 10);
-
-    return NextResponse.json(leaderboard);
+    await requireAuth();
+    return NextResponse.json(
+      {
+        error: "This endpoint has been retired. Progress is personal-only in Corovel.",
+      },
+      { status: 410 }
+    );
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
     return NextResponse.json(
-      { error: "Failed to fetch leaderboard" },
+      { error: "Failed to process request" },
       { status: 500 }
     );
   }

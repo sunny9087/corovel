@@ -5,20 +5,15 @@ import { useEffect, useState } from "react";
 interface RetentionHooksProps {
   streak: number;
   hasCheckedInToday: boolean;
-  userRank: number | null;
-  totalUsers: number;
   pointsIncrease?: number;
 }
 
 export default function RetentionHooks({
   streak,
   hasCheckedInToday,
-  userRank,
-  totalUsers,
   pointsIncrease,
 }: RetentionHooksProps) {
   const [showStreakWarning, setShowStreakWarning] = useState(false);
-  const [showSocialMotivation, setShowSocialMotivation] = useState(false);
   const [showPointsFeedback, setShowPointsFeedback] = useState(false);
 
   useEffect(() => {
@@ -26,15 +21,7 @@ export default function RetentionHooks({
     if (streak > 0 && !hasCheckedInToday) {
       setShowStreakWarning(true);
     }
-
-    // Social motivation - show if user is in top 20%
-    if (userRank && totalUsers > 0) {
-      const topPercentileThreshold = Math.ceil(totalUsers * 0.2);
-      if (userRank <= topPercentileThreshold) {
-        setShowSocialMotivation(true);
-      }
-    }
-  }, [streak, hasCheckedInToday, userRank, totalUsers]);
+  }, [streak, hasCheckedInToday]);
 
   useEffect(() => {
     // Points feedback - show when points increase
@@ -47,7 +34,7 @@ export default function RetentionHooks({
     }
   }, [pointsIncrease]);
 
-  if (!showStreakWarning && !showSocialMotivation && !showPointsFeedback) {
+  if (!showStreakWarning && !showPointsFeedback) {
     return null;
   }
 
@@ -78,21 +65,6 @@ export default function RetentionHooks({
         </div>
       )}
 
-      {/* Social Motivation */}
-      {showSocialMotivation && (
-        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-3 md:p-4 flex items-center gap-2 md:gap-3 animate-slide-up">
-          <div className="animate-float">
-            <svg className="w-4 h-4 md:w-5 md:h-5 text-[#6366F1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-[#1F2937] font-medium text-sm md:text-base">Building consistently</p>
-            <p className="text-xs md:text-sm text-[#6B7280]">You&apos;re in the top 20% of active users</p>
-          </div>
-        </div>
-      )}
-
       {/* Points Feedback */}
       {showPointsFeedback && pointsIncrease && (
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-3 md:p-4 animate-bounce-in">
@@ -104,7 +76,7 @@ export default function RetentionHooks({
             </div>
             <div>
               <p className="text-[#1F2937] font-medium text-base md:text-lg">
-                +{pointsIncrease} progress
+                +{pointsIncrease} logged
               </p>
               <p className="text-xs md:text-sm text-[#6B7280]">Action logged</p>
             </div>

@@ -71,7 +71,7 @@ export default async function TasksPage() {
           <div className="px-4 lg:px-8 py-3 md:py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl md:text-2xl font-bold text-[#1F2937] ml-12 lg:ml-0">Daily Actions</h2>
+                <h2 className="text-xl md:text-2xl font-bold iridescent ml-12 lg:ml-0">Daily Actions</h2>
                 <p className="text-xs md:text-sm text-[#6B7280] mt-1 ml-12 lg:ml-0">Choose actions that move you forward</p>
               </div>
               <div className="hidden sm:block text-right">
@@ -82,7 +82,7 @@ export default async function TasksPage() {
           </div>
         </header>
         
-        <main className="p-3 md:p-4 lg:p-8 space-y-6 md:space-y-8">
+        <main className="p-3 md:p-4 lg:p-8 space-y-6 md:space-y-8 animate-fade-in">
           {/* Category sections */}
           {tasksByCategory.map((group) => (
             <section key={group.category}>

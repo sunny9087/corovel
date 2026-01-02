@@ -9,7 +9,7 @@ import LogoutButton from "./LogoutButton";
 const menuItems = [
   { name: "Dashboard", href: "/dashboard", icon: "📊" },
   { name: "Daily Actions", href: "/dashboard/tasks", icon: "✅" },
-  { name: "Progress", href: "/dashboard/leaderboard", icon: "📈" },
+  { name: "Timeline", href: "/dashboard/leaderboard", icon: "🕒" },
   { name: "Invite", href: "/dashboard/referral", icon: "🔗" },
   { name: "Profile", href: "/dashboard/profile", icon: "👤" },
 ];

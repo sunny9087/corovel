@@ -1,7 +1,10 @@
 /**
- * Leaderboard utilities
+ * Leaderboard utilities (retired)
+ *
+ * Corovel's Progress is personal-only and must not encourage comparison.
+ * These helpers remain only for compatibility, but they no longer query or
+ * rank other users.
  */
-import { prisma } from "./prisma";
 
 export interface LeaderboardEntry {
   rank: number;
@@ -12,93 +15,33 @@ export interface LeaderboardEntry {
 }
 
 /**
- * Get top users by points (for current week)
+ * Retired: previously returned ranked users.
  */
 export async function getTopUsers(limit = 10, currentUserId?: string): Promise<LeaderboardEntry[]> {
-  // Get start of current week (Monday)
-  const now = new Date();
-  const weekStart = new Date(now);
-  const dayOfWeek = now.getDay();
-  const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  weekStart.setDate(now.getDate() + diff);
-  weekStart.setHours(0, 0, 0, 0);
-
-  // Get users with their current points
-  // Note: For weekly leaderboard, we could track weekly points separately
-  // For now, we'll use total points (can be enhanced later)
-  const users = await prisma.user.findMany({
-    select: {
-      id: true,
-      email: true,
-      points: true,
-    },
-    orderBy: {
-      points: "desc",
-    },
-    take: limit,
-  });
-
-  return users.map((user, index) => ({
-    rank: index + 1,
-    userId: user.id,
-    email: maskEmail(user.email),
-    points: user.points,
-    isCurrentUser: currentUserId === user.id,
-  }));
+  void limit;
+  void currentUserId;
+  return [];
 }
 
 /**
- * Get user's rank in leaderboard
+ * Retired: previously calculated a user's position.
  */
 export async function getUserRank(userId: string): Promise<number | null> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { points: true },
-  });
-
-  if (!user) return null;
-
-  const usersAhead = await prisma.user.count({
-    where: {
-      points: {
-        gt: user.points,
-      },
-    },
-  });
-
-  return usersAhead + 1;
+  void userId;
+  return null;
 }
 
 /**
- * Check if user is in top 20%
+ * Retired: previously computed percentile placement.
  */
 export async function isUserInTopPercentile(userId: string, percentile = 20): Promise<boolean> {
-  const totalUsers = await prisma.user.count();
-  if (totalUsers === 0) return false;
-
-  const userRank = await getUserRank(userId);
-  if (!userRank) return false;
-
-  const topPercentileThreshold = Math.ceil(totalUsers * (percentile / 100));
-  return userRank <= topPercentileThreshold;
+  void userId;
+  void percentile;
+  return false;
 }
 
 /**
- * Mask email for privacy (show first 2 chars and domain)
- */
-function maskEmail(email: string): string {
-  const [localPart, domain] = email.split("@");
-  if (!domain) return email;
-
-  if (localPart.length <= 2) {
-    return `${localPart[0]}***@${domain}`;
-  }
-
-  return `${localPart.substring(0, 2)}***@${domain}`;
-}
-
-/**
- * Get leaderboard with current user included if not in top 10
+ * Retired: previously returned a ranked list plus a user entry.
  */
 export async function getLeaderboardWithUser(
   currentUserId: string,
@@ -108,39 +51,11 @@ export async function getLeaderboardWithUser(
   userEntry: LeaderboardEntry | null;
   userRank: number | null;
 }> {
-  const topUsers = await getTopUsers(limit, currentUserId);
-  const userRank = await getUserRank(currentUserId);
-
-  // Check if current user is already in top list
-  const userInList = topUsers.find((entry) => entry.isCurrentUser);
-
-  let userEntry: LeaderboardEntry | null = null;
-
-  if (!userInList && userRank) {
-    // Get user's entry
-    const user = await prisma.user.findUnique({
-      where: { id: currentUserId },
-      select: {
-        id: true,
-        email: true,
-        points: true,
-      },
-    });
-
-    if (user) {
-      userEntry = {
-        rank: userRank,
-        userId: user.id,
-        email: maskEmail(user.email),
-        points: user.points,
-        isCurrentUser: true,
-      };
-    }
-  }
-
+  void currentUserId;
+  void limit;
   return {
-    entries: topUsers,
-    userEntry,
-    userRank,
+    entries: [],
+    userEntry: null,
+    userRank: null,
   };
 }

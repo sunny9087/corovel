@@ -13,12 +13,12 @@ export default async function ReferralPage() {
       <div className="lg:ml-64">
         <header className="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-gray-200 shadow-sm">
           <div className="px-4 lg:px-8 py-3 md:py-4">
-            <h2 className="text-xl md:text-2xl font-bold text-[#1F2937] ml-12 lg:ml-0">Invite Others</h2>
+            <h2 className="text-xl md:text-2xl font-bold iridescent ml-12 lg:ml-0">Invite Others</h2>
             <p className="text-xs md:text-sm text-[#6B7280] mt-1 ml-12 lg:ml-0">Share Corovel with others</p>
           </div>
         </header>
-        <main className="p-3 md:p-4 lg:p-8">
-          <div className="premium-card rounded-xl p-4 md:p-8 max-w-2xl">
+        <main className="p-3 md:p-4 lg:p-8 animate-fade-in">
+          <div className="premium-card card-hover card-glow rounded-xl p-4 md:p-8 max-w-2xl">
             <div className="premium-card-content">
               <h3 className="text-lg md:text-xl font-semibold text-[#1F2937] mb-4 md:mb-6">Your Invite Code</h3>
               <div className="mb-4 md:mb-6">
