@@ -25,6 +25,11 @@ function formatPercent(value: number): string {
   return `${Math.round(value * 100)}%`;
 }
 
+function formatSignedPercent(value: number): string {
+  const pct = Math.round(value * 100);
+  return `${pct >= 0 ? "+" : ""}${pct}%`;
+}
+
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
 }
@@ -108,6 +113,10 @@ export default async function DashboardPage() {
   const actions7 = last7.length;
   const actions30 = last30.length;
 
+  const points7 = last7.reduce((sum, t) => sum + t.amount, 0);
+  const points30 = last30.reduce((sum, t) => sum + t.amount, 0);
+  const pointsPrev7 = prev7.reduce((sum, t) => sum + t.amount, 0);
+
   // Consistency: active days in last 30 (days with ≥1 action)
   const activeDaysSet = new Set<string>();
   for (const t of last30) {
@@ -142,8 +151,8 @@ export default async function DashboardPage() {
     other: categoryCounts.other / categoryTotal,
   };
 
-  // Momentum trend: compare last 7 days vs previous 7 days
-  const { trend, deltaRatio } = computeTrend(actions7, prev7.length);
+  // Momentum trend: compare last 7 days vs previous 7 days (by points earned)
+  const { trend, deltaRatio } = computeTrend(points7, pointsPrev7);
   const trendLabel = trend === "increasing" ? "Increasing" : trend === "declining" ? "Declining" : "Stable";
 
   // Time flow: per-day counts for last 14 days
@@ -261,15 +270,26 @@ export default async function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-10">
-            {/* Activity Volume */}
+            {/* Total Progress */}
             <div className="premium-card card-hover card-glow rounded-xl p-4 md:p-6 stagger-item">
               <div className="premium-card-content">
-                <p className="text-xs md:text-sm text-[#6B7280] font-medium">Activity Volume</p>
+                <p className="text-xs md:text-sm text-[#6B7280] font-medium">Total Progress</p>
+                <div className="mt-2 text-2xl md:text-3xl font-bold text-[#1F2937]">{user.points.toLocaleString()}</div>
+                <p className="text-[11px] md:text-xs text-[#6B7280] mt-2">Cumulative points on your account.</p>
+              </div>
+            </div>
+
+            {/* Points Earned */}
+            <div className="premium-card card-hover card-glow rounded-xl p-4 md:p-6 stagger-item">
+              <div className="premium-card-content">
+                <p className="text-xs md:text-sm text-[#6B7280] font-medium">Points Earned</p>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <div className="text-2xl md:text-3xl font-bold text-[#1F2937]">{actions7}</div>
-                  <div className="text-xs md:text-sm text-[#6B7280]">/ {actions30}</div>
+                  <div className="text-2xl md:text-3xl font-bold text-[#1F2937]">{points7.toLocaleString()}</div>
+                  <div className="text-xs md:text-sm text-[#6B7280]">/ {points30.toLocaleString()}</div>
                 </div>
-                <p className="text-[11px] md:text-xs text-[#6B7280] mt-2">Actions logged in the last 7 days / 30 days.</p>
+                <p className="text-[11px] md:text-xs text-[#6B7280] mt-2">
+                  Points earned in the last 7 days / 30 days ({actions7} / {actions30} actions).
+                </p>
               </div>
             </div>
 
@@ -322,7 +342,7 @@ export default async function DashboardPage() {
                   <div>
                     <div className="text-2xl md:text-3xl font-bold text-[#1F2937]">{trendLabel}</div>
                     <p className="text-[11px] md:text-xs text-[#6B7280] mt-1">
-                      Compared to the previous 7 days ({deltaRatio >= 0 ? "+" : ""}{Math.round(deltaRatio * 100)}%).
+                      Compared to the previous 7 days ({formatSignedPercent(deltaRatio)} by points).
                     </p>
                   </div>
                   <div className="w-28 h-10 flex items-end gap-0.5" aria-label="14-day activity sparkline">

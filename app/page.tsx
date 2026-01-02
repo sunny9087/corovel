@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -12,6 +13,45 @@ export default async function Home() {
 
   if (user) {
     redirect("/dashboard");
+  }
+
+  // Public, aggregate stats only (no user comparisons). Keep resilient if DB is unavailable.
+  let systemStats:
+    | {
+        totalAccounts: number;
+        totalActions: number;
+        actionsLast7Days: number;
+        totalPointsIssued: number;
+      }
+    | null = null;
+
+  try {
+    const now = new Date();
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const [totalAccounts, totalActions, actionsLast7Days, totalPointsAgg] =
+      await Promise.all([
+        prisma.user.count(),
+        prisma.pointTransaction.count(),
+        prisma.pointTransaction.count({
+          where: {
+            createdAt: { gte: sevenDaysAgo },
+          },
+        }),
+        prisma.pointTransaction.aggregate({
+          _sum: { amount: true },
+        }),
+      ]);
+
+    systemStats = {
+      totalAccounts,
+      totalActions,
+      actionsLast7Days,
+      totalPointsIssued: totalPointsAgg._sum.amount ?? 0,
+    };
+  } catch {
+    systemStats = null;
   }
 
   return (
@@ -134,6 +174,56 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* System Snapshot (Aggregate) */}
+      {systemStats && (
+        <section className="py-12 md:py-24 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8 md:mb-14">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1F2937]">
+                System Snapshot
+              </h2>
+              <p className="text-sm md:text-lg text-[#6B7280] mt-2">
+                Aggregate metrics only — no ranking, no comparison.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
+              <div className="premium-card rounded-xl p-4 md:p-8 text-center hover-scale animate-fade-in">
+                <div className="premium-card-content">
+                  <div className="text-xs md:text-sm text-[#6B7280] font-medium">Accounts</div>
+                  <div className="text-2xl md:text-4xl font-bold text-[#1F2937] mt-2">
+                    {systemStats.totalAccounts.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              <div className="premium-card rounded-xl p-4 md:p-8 text-center hover-scale animate-fade-in" style={{ animationDelay: "0.05s" }}>
+                <div className="premium-card-content">
+                  <div className="text-xs md:text-sm text-[#6B7280] font-medium">Actions Logged</div>
+                  <div className="text-2xl md:text-4xl font-bold text-[#1F2937] mt-2">
+                    {systemStats.totalActions.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              <div className="premium-card rounded-xl p-4 md:p-8 text-center hover-scale animate-fade-in" style={{ animationDelay: "0.1s" }}>
+                <div className="premium-card-content">
+                  <div className="text-xs md:text-sm text-[#6B7280] font-medium">Actions (7d)</div>
+                  <div className="text-2xl md:text-4xl font-bold text-[#1F2937] mt-2">
+                    {systemStats.actionsLast7Days.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              <div className="premium-card rounded-xl p-4 md:p-8 text-center hover-scale animate-fade-in" style={{ animationDelay: "0.15s" }}>
+                <div className="premium-card-content">
+                  <div className="text-xs md:text-sm text-[#6B7280] font-medium">Points Issued</div>
+                  <div className="text-2xl md:text-4xl font-bold text-[#1F2937] mt-2">
+                    {systemStats.totalPointsIssued.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Why Corovel */}
       <section className="py-12 md:py-24 px-4">
