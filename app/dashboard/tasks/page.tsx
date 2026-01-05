@@ -7,6 +7,18 @@ import Sidebar from "@/components/Sidebar";
 
 export default async function TasksPage() {
   const user = await requireAuth();
+
+  // Auto-seed tasks if database is empty
+  const existingTasks = await getActiveTasks();
+  if (existingTasks.length === 0) {
+    try {
+      const { initializeTasks } = await import("@/lib/tasks");
+      await initializeTasks();
+    } catch (e) {
+      console.error("Failed to initialize tasks:", e);
+    }
+  }
+
   const tasks = await getActiveTasks();
   const completedTasks = await getUserCompletedTasks(user.id);
 

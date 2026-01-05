@@ -7,6 +7,7 @@
  * - Update existing tasks with new points/settings
  * - Deactivate old tasks no longer in the default list
  */
+import "dotenv/config";
 import { initializeTasks } from "../lib/tasks.js";
 
 async function main() {

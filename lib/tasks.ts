@@ -59,6 +59,16 @@ export const TASK_CATEGORIES: Record<TaskCategory, { label: string; description:
 
 // Default tasks organized by category
 export const DEFAULT_TASKS: TaskData[] = [
+  // Core daily log (used by /api/tasks/daily-checkin)
+  {
+    name: "Daily Check-in",
+    type: "daily",
+    points: 5,
+    isActive: true,
+    category: "system",
+    description: "Log one action today to keep momentum moving",
+  },
+
   // Focus & Direction
   {
     name: "Define today's primary focus",
