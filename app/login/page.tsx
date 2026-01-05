@@ -20,6 +20,9 @@ function LoginForm() {
     if (searchParams.get("verified") === "true") {
       setSuccess("Email verified successfully! You can now login.");
     }
+    if (searchParams.get("registered") === "true") {
+      setSuccess("Account created. Please verify your email, then log in.");
+    }
     // Handle OAuth errors gracefully
     if (searchParams.get("error")) {
       const errorParam = searchParams.get("error");

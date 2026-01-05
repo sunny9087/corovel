@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 interface GoogleSignInButtonProps {
   variant?: "default" | "outline";
@@ -16,12 +17,25 @@ export default function GoogleSignInButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError("");
 
     try {
+      const ref = searchParams.get("ref");
+      if (ref && ref.trim()) {
+        // Persist referral for OAuth signup flow
+        await fetch("/api/auth/referral", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ referralCode: ref.trim() }),
+        }).catch(() => {
+          // Non-fatal: proceed with sign-in even if this fails
+        });
+      }
+
       const result = await signIn("google", {
         callbackUrl: "/dashboard",
         redirect: false, // Handle redirect manually for better error control

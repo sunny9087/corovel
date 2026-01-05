@@ -23,7 +23,11 @@ export async function POST(request: NextRequest) {
       }
     } catch (rateLimitError) {
       console.error("Rate limit check failed:", rateLimitError);
-      // Continue without rate limiting if it fails
+      // Fail closed to avoid disabling protections on infrastructure issues
+      return NextResponse.json(
+        { error: "Service temporarily unavailable. Please try again." },
+        { status: 503 }
+      );
     }
 
     // CSRF protection
@@ -79,9 +83,13 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-    // Note: Email verification is recommended but not required for login
-    // Users can still access the dashboard but may have limited features
-    // until they verify their email
+    // Require email verification for credential-based accounts
+    if (!user.emailVerified) {
+      return NextResponse.json(
+        { error: "Please verify your email before logging in." },
+        { status: 401 }
+      );
+    }
 
     const isValidPassword = await verifyPassword(password, user.passwordHash);
     if (!isValidPassword) {

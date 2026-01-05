@@ -616,14 +616,16 @@ export async function completeReferralTask(
   }
 
   // Complete for referrer (they get points in createUser, but track task completion)
-  // Note: Referral task can be completed multiple times (once per referral)
-  // So we create a new UserTask record for each referral
-  await prisma.userTask.create({
-    data: {
-      userId: referrerUserId,
-      taskId: task.id,
-    },
-  });
+  // Note: The current schema enforces @@unique([userId, taskId]), so this must be idempotent.
+  const referrerHasCompleted = await hasUserCompletedTask(referrerUserId, task.id);
+  if (!referrerHasCompleted) {
+    await prisma.userTask.create({
+      data: {
+        userId: referrerUserId,
+        taskId: task.id,
+      },
+    });
+  }
 }
 
 /**

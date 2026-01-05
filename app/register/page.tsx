@@ -20,7 +20,7 @@ function RegisterForm() {
 
   useEffect(() => {
     if (refCode) {
-      setReferralCode(refCode);
+      setReferralCode(refCode.trim().toUpperCase());
     }
   }, [refCode]);
 
@@ -53,10 +53,10 @@ function RegisterForm() {
       const data = await res.json();
 
       if (res.ok) {
-        setSuccess(data.message || "Registration successful! Redirecting to dashboard...");
-        // Redirect to dashboard immediately since user is now logged in
+        setSuccess(data.message || "Registration successful! Please verify your email, then log in.");
+        // Redirect to login (no auto-login before verification)
         setTimeout(() => {
-          router.push(data.redirect || "/dashboard");
+          router.push(data.redirect || "/login?registered=true");
         }, 1000);
       } else {
         setError(data.error || "Registration failed");

@@ -119,7 +119,7 @@ export const registerSchema = z.object({
       },
       z
         .string()
-        .regex(/^[A-F0-9]{16}$/, "Invalid referral code format")
+        .regex(/^[A-Fa-f0-9]{16}$/, "Invalid referral code format")
         .optional()
     ),
 });
@@ -133,7 +133,7 @@ export const loginSchema = z.object({
 // Referral code schema
 export const referralCodeSchema = z
   .string()
-  .regex(/^[A-F0-9]{16}$/, "Invalid referral code format")
+  .regex(/^[A-Fa-f0-9]{16}$/, "Invalid referral code format")
   .transform((val) => val.toUpperCase());
 
 // Password reset request schema

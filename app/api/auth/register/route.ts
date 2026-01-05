@@ -5,7 +5,6 @@ import { authRateLimiter, getRateLimitKey } from "@/lib/rate-limit";
 import { requireCsrfToken } from "@/lib/csrf";
 import { sendVerificationEmail } from "@/lib/email";
 import { trackEvent } from "@/lib/analytics";
-import { createSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +23,11 @@ export async function POST(request: NextRequest) {
       }
     } catch (rateLimitError) {
       console.error("Rate limit check failed:", rateLimitError);
-      // Continue without rate limiting if it fails
+      // Fail closed to avoid disabling protections on infrastructure issues
+      return NextResponse.json(
+        { error: "Service temporarily unavailable. Please try again." },
+        { status: 503 }
+      );
     }
 
     // CSRF protection
@@ -117,17 +120,14 @@ export async function POST(request: NextRequest) {
       // Don't fail registration if email fails
     }
 
-    // Auto-login: Create session for the new user
-    await createSession(user.id);
-
     return NextResponse.json({
       success: true,
-      message: "Registration successful! You are now logged in.",
+      message: "Registration successful! Please check your email to verify your account before logging in.",
       user: {
         id: user.id,
         email: user.email,
       },
-      redirect: "/dashboard",
+      redirect: "/login?registered=true",
     });
   } catch (error) {
     console.error("Registration error:", error);

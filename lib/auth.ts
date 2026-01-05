@@ -56,9 +56,19 @@ export async function getUserByEmail(email: string) {
 }
 
 export async function validateReferralCode(referralCode: string): Promise<boolean> {
-  const user = await prisma.user.findUnique({
-    where: { referralCode },
+  const normalized = referralCode.trim();
+  if (!normalized) return false;
+
+  const user = await prisma.user.findFirst({
+    where: {
+      referralCode: {
+        equals: normalized,
+        mode: "insensitive",
+      },
+    },
+    select: { id: true },
   });
+
   return !!user;
 }
 
@@ -72,45 +82,53 @@ export async function createUser(
   
   // Use transaction to ensure consistency
   const result = await prisma.$transaction(async (tx) => {
+    const referredByNormalized = referredBy?.trim();
+    const referrer = referredByNormalized
+      ? await tx.user.findFirst({
+          where: {
+            referralCode: {
+              equals: referredByNormalized,
+              mode: "insensitive",
+            },
+          },
+          select: { id: true, referralCode: true },
+        })
+      : null;
+
     const user = await tx.user.create({
       data: {
         email,
         passwordHash,
         referralCode,
-        referredBy: referredBy || null,
-        points: referredBy ? 10 : 0,
+        referredBy: referrer ? referrer.referralCode : null,
+        points: referrer ? 10 : 0,
         emailVerificationToken: verificationToken,
       },
     });
 
     // Give referrer 10 points if this is a referral (one-time per referral)
     let referrerId: string | null = null;
-    if (referredBy) {
-      const referrer = await tx.user.findUnique({
-        where: { referralCode: referredBy },
+    if (referrer) {
+      referrerId = referrer.id;
+
+      await tx.user.update({
+        where: { id: referrer.id },
+        data: {
+          points: {
+            increment: 10,
+          },
+        },
       });
 
-      if (referrer) {
-        referrerId = referrer.id;
-        await tx.user.update({
-          where: { id: referrer.id },
-          data: {
-            points: {
-              increment: 10,
-            },
-          },
-        });
-
-        // Record transaction for referrer
-        await tx.pointTransaction.create({
-          data: {
-            userId: referrer.id,
-            amount: 10,
-            type: "referral_reward",
-            description: `Referral reward for ${email}`,
-          },
-        });
-      }
+      // Record transaction for referrer
+      await tx.pointTransaction.create({
+        data: {
+          userId: referrer.id,
+          amount: 10,
+          type: "referral_reward",
+          description: `Referral reward for ${email}`,
+        },
+      });
 
       // Record transaction for new user
       await tx.pointTransaction.create({
