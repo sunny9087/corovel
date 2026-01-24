@@ -978,6 +978,7 @@ export const UserScalarFieldEnum = {
   referredBy: 'referredBy',
   emailVerified: 'emailVerified',
   emailVerificationToken: 'emailVerificationToken',
+  emailVerificationTokenExpires: 'emailVerificationTokenExpires',
   resetPasswordToken: 'resetPasswordToken',
   resetPasswordExpires: 'resetPasswordExpires',
   createdAt: 'createdAt'

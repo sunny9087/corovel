@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     const { email, password, referralCode } = validationResult.data;
 
-    // Check if user exists (don't reveal if email exists)
+    // Check if user exists (don't reveal if email exists to prevent user enumeration)
     let existingUser;
     try {
       existingUser = await getUserByEmail(email);
@@ -66,9 +66,12 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Don't reveal if user exists - use generic message to prevent user enumeration
     if (existingUser) {
+      // Add delay to prevent timing attacks
+      await new Promise((resolve) => setTimeout(resolve, 100));
       return NextResponse.json(
-        { error: "A user with this email already exists" },
+        { error: "Registration failed. Please check your information and try again." },
         { status: 400 }
       );
     }

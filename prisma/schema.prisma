@@ -21,6 +21,7 @@ model User {
   referredBy            String?           @map("referred_by")
   emailVerified         Boolean           @default(false) @map("email_verified")
   emailVerificationToken String?          @map("email_verification_token")
+  emailVerificationTokenExpires DateTime? @map("email_verification_token_expires")
   resetPasswordToken    String?           @map("reset_password_token")
   resetPasswordExpires  DateTime?         @map("reset_password_expires")
   createdAt             DateTime          @default(now()) @map("created_at")
@@ -29,6 +30,8 @@ model User {
   pointTransactions     PointTransaction[]
   userTasks             UserTask[]
 
+  @@index([emailVerificationToken])
+  @@index([resetPasswordToken])
   @@map("users")
 }
 

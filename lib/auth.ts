@@ -79,21 +79,32 @@ export async function createUser(
 ): Promise<CreateUserResult> {
   const referralCode = generateReferralCode();
   const verificationToken = generateVerificationToken();
+  const verificationTokenExpires = new Date();
+  verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24); // 24 hours expiration
   
   // Use transaction to ensure consistency
   const result = await prisma.$transaction(async (tx) => {
     const referredByNormalized = referredBy?.trim();
-    const referrer = referredByNormalized
-      ? await tx.user.findFirst({
-          where: {
-            referralCode: {
-              equals: referredByNormalized,
-              mode: "insensitive",
-            },
+    let referrer = null;
+    
+    // Validate referrer if provided
+    if (referredByNormalized) {
+      referrer = await tx.user.findFirst({
+        where: {
+          referralCode: {
+            equals: referredByNormalized,
+            mode: "insensitive",
           },
-          select: { id: true, referralCode: true },
-        })
-      : null;
+          emailVerified: true, // Only allow verified users as referrers
+        },
+        select: { id: true, referralCode: true, email: true },
+      });
+      
+      // Prevent self-referral (check if referrer email matches new user email)
+      if (referrer && referrer.email.toLowerCase() === email.toLowerCase()) {
+        referrer = null; // Block self-referral
+      }
+    }
 
     const user = await tx.user.create({
       data: {
@@ -103,6 +114,7 @@ export async function createUser(
         referredBy: referrer ? referrer.referralCode : null,
         points: referrer ? 10 : 0,
         emailVerificationToken: verificationToken,
+        emailVerificationTokenExpires: verificationTokenExpires,
       },
     });
 
@@ -198,11 +210,25 @@ export async function verifyEmail(token: string): Promise<boolean> {
     return false;
   }
 
+  // Check if token has expired
+  if (user.emailVerificationTokenExpires && user.emailVerificationTokenExpires < new Date()) {
+    // Token expired - clean it up
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerificationToken: null,
+        emailVerificationTokenExpires: null,
+      },
+    });
+    return false;
+  }
+
   await prisma.user.update({
     where: { id: user.id },
     data: {
       emailVerified: true,
       emailVerificationToken: null,
+      emailVerificationTokenExpires: null,
     },
   });
 

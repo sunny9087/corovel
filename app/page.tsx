@@ -3,8 +3,16 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { UserPlus, CheckSquare, TrendingUp, Sparkles, Settings, Target, Lock, Coins } from "lucide-react";
 import OrbitingElements from "@/components/OrbitingElements";
 import AnimatedNetwork from "@/components/AnimatedNetwork";
+import Icon from "@/components/ui/Icon";
+import CorovelTokenBadge from "@/components/CorovelTokenBadge";
+import CorovelBranding from "@/components/CorovelBranding";
+import AnimatedBackground from "@/components/AnimatedBackground";
+import GradientMesh from "@/components/GradientMesh";
+import ParticleField from "@/components/ParticleField";
+import AnimatedShapes from "@/components/AnimatedShapes";
 
 export const dynamic = "force-dynamic";
 
@@ -83,9 +91,15 @@ export default async function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 pt-20 pb-8 relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <section className="min-h-screen flex items-center justify-center px-4 pt-20 pb-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-primary-50/30">
+        {/* Advanced Animated Backgrounds */}
+        <GradientMesh />
+        <AnimatedBackground />
+        <ParticleField />
+        <AnimatedShapes />
+        
+        {/* Legacy blob animations */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           <div className="absolute top-20 left-4 md:left-10 w-48 md:w-72 h-48 md:h-72 bg-[#6366F1]/10 rounded-full blur-3xl animate-blob-morph"></div>
           <div className="absolute top-40 right-4 md:right-10 w-64 md:w-96 h-64 md:h-96 bg-[#22D3EE]/10 rounded-full blur-3xl animate-blob-morph" style={{ animationDelay: "2s" }}></div>
           <div className="absolute bottom-20 left-1/2 w-56 md:w-80 h-56 md:h-80 bg-[#8B5CF6]/10 rounded-full blur-3xl animate-blob-morph" style={{ animationDelay: "4s" }}></div>
@@ -94,12 +108,21 @@ export default async function Home() {
         <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center relative z-10">
           {/* Left: Content */}
           <div className="animate-fade-in text-center lg:text-left">
+            <div className="flex items-center justify-center lg:justify-start gap-3 mb-4 animate-slide-up">
+              <CorovelTokenBadge variant="large" />
+            </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#1F2937] mb-4 md:mb-6 leading-tight animate-slide-up">
               See what you&apos;re building.
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-[#6B7280] mb-6 md:mb-8 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <p className="text-lg sm:text-xl md:text-2xl text-[#6B7280] mb-4 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               Turn daily actions into long-term clarity and momentum.
             </p>
+            <div className="flex items-center justify-center lg:justify-start gap-2 mb-6 md:mb-8 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+              <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-50 to-purple-50 rounded-lg border border-primary-200">
+                <Icon icon={Coins} size="sm" className="text-primary-600" />
+                <span className="text-sm font-semibold text-primary-700">Earn Corovel Tokens</span>
+              </div>
+            </div>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 animate-slide-up justify-center lg:justify-start" style={{ animationDelay: "0.2s" }}>
               <Link
                 href="/register"
@@ -146,7 +169,11 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
             <div className="premium-card rounded-xl p-5 md:p-8 text-center hover-scale animate-fade-in">
               <div className="premium-card-content">
-                <div className="text-4xl md:text-6xl mb-4 md:mb-6">1️⃣</div>
+                <div className="flex justify-center mb-4 md:mb-6">
+                  <div className="p-4 rounded-full bg-primary-100">
+                    <Icon icon={UserPlus} size="xl" className="text-primary-600" />
+                  </div>
+                </div>
                 <h3 className="text-xl md:text-2xl font-semibold text-[#1F2937] mb-2 md:mb-4">Sign Up</h3>
                 <p className="text-[#6B7280] text-base md:text-lg">
                   Create your account in seconds. No complex setup required.
@@ -155,7 +182,11 @@ export default async function Home() {
             </div>
             <div className="premium-card rounded-xl p-5 md:p-8 text-center hover-scale animate-fade-in" style={{ animationDelay: "0.1s" }}>
               <div className="premium-card-content">
-                <div className="text-4xl md:text-6xl mb-4 md:mb-6">2️⃣</div>
+                <div className="flex justify-center mb-4 md:mb-6">
+                  <div className="p-4 rounded-full bg-accent-100">
+                    <Icon icon={CheckSquare} size="xl" className="text-accent-600" />
+                  </div>
+                </div>
                 <h3 className="text-xl md:text-2xl font-semibold text-[#1F2937] mb-2 md:mb-4">Log Daily Actions</h3>
                 <p className="text-[#6B7280] text-base md:text-lg">
                   Record what you&apos;re working on. Small inputs, compounding clarity.
@@ -164,7 +195,11 @@ export default async function Home() {
             </div>
             <div className="premium-card rounded-xl p-5 md:p-8 text-center hover-scale animate-fade-in" style={{ animationDelay: "0.2s" }}>
               <div className="premium-card-content">
-                <div className="text-4xl md:text-6xl mb-4 md:mb-6">3️⃣</div>
+                <div className="flex justify-center mb-4 md:mb-6">
+                  <div className="p-4 rounded-full bg-purple-100">
+                    <Icon icon={TrendingUp} size="xl" className="text-purple-600" />
+                  </div>
+                </div>
                 <h3 className="text-xl md:text-2xl font-semibold text-[#1F2937] mb-2 md:mb-4">See Your Momentum</h3>
                 <p className="text-[#6B7280] text-base md:text-lg">
                   Understand what you&apos;re actually building with your time.
@@ -234,7 +269,11 @@ export default async function Home() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
             <div className="premium-card rounded-xl p-4 md:p-8 text-center hover-scale animate-fade-in">
               <div className="premium-card-content">
-                <div className="text-3xl md:text-5xl mb-3 md:mb-4">✨</div>
+                <div className="flex justify-center mb-3 md:mb-4">
+                  <div className="p-3 rounded-full bg-primary-100">
+                    <Icon icon={Sparkles} size="lg" className="text-primary-600" />
+                  </div>
+                </div>
                 <h3 className="text-base md:text-xl font-semibold text-[#1F2937] mb-2 md:mb-3">Minimal</h3>
                 <p className="text-xs md:text-base text-[#6B7280]">
                   Clean interface. No clutter, no noise.
@@ -243,7 +282,11 @@ export default async function Home() {
             </div>
             <div className="premium-card rounded-xl p-4 md:p-8 text-center hover-scale animate-fade-in" style={{ animationDelay: "0.1s" }}>
               <div className="premium-card-content">
-                <div className="text-3xl md:text-5xl mb-3 md:mb-4">⚙️</div>
+                <div className="flex justify-center mb-3 md:mb-4">
+                  <div className="p-3 rounded-full bg-accent-100">
+                    <Icon icon={Settings} size="lg" className="text-accent-600" />
+                  </div>
+                </div>
                 <h3 className="text-base md:text-xl font-semibold text-[#1F2937] mb-2 md:mb-3">System-first</h3>
                 <p className="text-xs md:text-base text-[#6B7280]">
                   Not about motivation. About direction.
@@ -252,7 +295,11 @@ export default async function Home() {
             </div>
             <div className="premium-card rounded-xl p-4 md:p-8 text-center hover-scale animate-fade-in" style={{ animationDelay: "0.2s" }}>
               <div className="premium-card-content">
-                <div className="text-3xl md:text-5xl mb-3 md:mb-4">🎯</div>
+                <div className="flex justify-center mb-3 md:mb-4">
+                  <div className="p-3 rounded-full bg-purple-100">
+                    <Icon icon={Target} size="lg" className="text-purple-600" />
+                  </div>
+                </div>
                 <h3 className="text-base md:text-xl font-semibold text-[#1F2937] mb-2 md:mb-3">Progress-focused</h3>
                 <p className="text-xs md:text-base text-[#6B7280]">
                   See the signal through the noise of daily work.
@@ -261,7 +308,11 @@ export default async function Home() {
             </div>
             <div className="premium-card rounded-xl p-4 md:p-8 text-center hover-scale animate-fade-in" style={{ animationDelay: "0.3s" }}>
               <div className="premium-card-content">
-                <div className="text-3xl md:text-5xl mb-3 md:mb-4">🔒</div>
+                <div className="flex justify-center mb-3 md:mb-4">
+                  <div className="p-3 rounded-full bg-success-100">
+                    <Icon icon={Lock} size="lg" className="text-success-600" />
+                  </div>
+                </div>
                 <h3 className="text-base md:text-xl font-semibold text-[#1F2937] mb-2 md:mb-3">Private & Secure</h3>
                 <p className="text-xs md:text-base text-[#6B7280]">
                   Your data is protected and your progress remains private
@@ -275,20 +326,25 @@ export default async function Home() {
       {/* CTA Section */}
       <section className="py-12 md:py-24 px-4 bg-white/30">
         <div className="max-w-4xl mx-auto text-center">
+          <CorovelBranding variant="hero" className="mb-8" />
           <div className="premium-card rounded-xl md:rounded-2xl p-6 md:p-12 hover-scale animate-fade-in">
             <div className="premium-card-content">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#1F2937] mb-4 md:mb-6">
                 Ready to see what you&apos;re building?
               </h2>
               <p className="text-base md:text-xl text-[#6B7280] mb-6 md:mb-10">
-                A system for people who care about direction, not motivation.
+                A system for people who care about direction, not motivation. Start earning Corovel tokens today.
               </p>
-              <Link
-                href="/register"
-                className="inline-block w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-[#6366F1] text-white rounded-lg hover:bg-[#8B5CF6] transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:scale-105 text-base md:text-lg min-h-[48px]"
-              >
-                Get Started
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link
+                  href="/register"
+                  className="inline-block w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-[#6366F1] text-white rounded-lg hover:bg-[#8B5CF6] transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:scale-105 text-base md:text-lg min-h-[48px] flex items-center justify-center gap-2"
+                >
+                  Get Started
+                  <Icon icon={Coins} size="sm" />
+                </Link>
+                <CorovelTokenBadge variant="large" />
+              </div>
             </div>
           </div>
         </div>

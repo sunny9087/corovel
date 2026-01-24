@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Zap, BookOpen, CheckCircle2, Lightbulb, Heart, Settings } from "lucide-react";
 import { fetchWithCsrf } from "@/lib/csrf-client";
+import Icon from "./ui/Icon";
 
 type TaskCategory = "focus" | "learning" | "output" | "reflection" | "energy" | "system";
 
@@ -33,50 +35,21 @@ const getCategoryStyle = (category: TaskCategory) => {
 const getCategoryIcon = (category: TaskCategory) => {
   switch (category) {
     case "focus":
-      return (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      );
+      return Zap;
     case "learning":
-      return (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-        </svg>
-      );
+      return BookOpen;
     case "output":
-      return (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      );
+      return CheckCircle2;
     case "reflection":
-      return (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-      );
+      return Lightbulb;
     case "energy":
-      return (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      );
+      return Heart;
     default:
-      return (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      );
+      return Settings;
   }
 };
 
-const getCompletedIcon = () => (
-  <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-  </svg>
-);
+const getCompletedIcon = () => CheckCircle2;
 
 export default function TaskCard({
   id,
@@ -154,8 +127,11 @@ export default function TaskCard({
       <div className="flex items-start gap-3">
         {/* Icon */}
         <div className={`flex-shrink-0 p-2 rounded-lg ${categoryStyle.bg}`}>
-          <div className={isComplete ? "text-green-500" : categoryStyle.icon}>
-            {isComplete ? getCompletedIcon() : getCategoryIcon(category)}
+          <div className={isComplete ? "text-success-500" : categoryStyle.icon}>
+            <Icon 
+              icon={isComplete ? getCompletedIcon() : getCategoryIcon(category)} 
+              size="md"
+            />
           </div>
         </div>
         
@@ -170,9 +146,13 @@ export default function TaskCard({
             </p>
           )}
           <div className="flex items-center gap-2 mt-2">
-            <span className={`text-xs px-2 py-0.5 rounded-full ${categoryStyle.bg} ${categoryStyle.text}`}>
-              +{points}
-            </span>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-primary-100 to-purple-100 border border-primary-200">
+              <svg className="w-3 h-3 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-bold text-primary-700">+{points} COROVEL</span>
+            </div>
             <span className="text-xs text-[#9CA3AF]">{statusText}</span>
           </div>
         </div>
@@ -185,8 +165,16 @@ export default function TaskCard({
       )}
 
       {success && (
-        <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded-lg text-green-600 text-xs">
-          Action logged. +{points} momentum.
+        <div className="mt-3 p-3 bg-gradient-to-r from-primary-50 to-purple-50 border-2 border-primary-200 rounded-lg animate-bounce-in">
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-success-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <div>
+              <div className="text-sm font-bold text-primary-700">Action logged!</div>
+              <div className="text-xs text-primary-600">+{points} Corovel tokens earned</div>
+            </div>
+          </div>
         </div>
       )}
 

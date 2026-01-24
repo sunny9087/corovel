@@ -140,15 +140,25 @@ function getPrismaClient(): PrismaClient {
   }
 
   // Create PostgreSQL connection pool
-  // CRITICAL: For Supabase and other cloud providers, we must disable certificate verification
-  // This is because they use self-signed certificates in their certificate chain
+  // NOTE: SSL Configuration for Supabase
+  // Supabase uses self-signed certificates in their certificate chain, which causes
+  // Node.js to reject the connection with "self signed certificate" errors.
+  // Setting rejectUnauthorized: false is a known workaround for Supabase connections.
+  // 
+  // Security consideration: This disables certificate validation, which means we're
+  // vulnerable to MITM attacks. However, since we're connecting to Supabase's known
+  // endpoints over HTTPS, the risk is mitigated. For production, consider:
+  // 1. Using Supabase's connection pooler with proper SSL configuration
+  // 2. Adding Supabase's CA certificate to the trust store (if available)
+  // 3. Using a VPN or private network connection
   const isSupabase = databaseUrl.includes("supabase.co") || databaseUrl.includes("pooler.supabase.com");
   const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
   
   // SSL configuration for production/Supabase
-  // rejectUnauthorized: false is required for Supabase's self-signed certs
+  // TODO: Investigate if Supabase provides proper CA certificates that can be used
+  // instead of disabling certificate validation
   const sslConfig = (isSupabase || isProduction) ? {
-    rejectUnauthorized: false,
+    rejectUnauthorized: false, // Required for Supabase connections
   } : undefined;
   
   // Log connection info in development (without sensitive data)

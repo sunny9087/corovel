@@ -4,6 +4,13 @@ import { prisma } from "@/lib/prisma";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
 import HeaderLogoutButton from "@/components/HeaderLogoutButton";
+import CorovelTokenBadge from "@/components/CorovelTokenBadge";
+import AnimatedBackground from "@/components/AnimatedBackground";
+import GradientMesh from "@/components/GradientMesh";
+import ParticleField from "@/components/ParticleField";
+import AnimatedShapes from "@/components/AnimatedShapes";
+import { Coins } from "lucide-react";
+import Icon from "@/components/ui/Icon";
 
 export const dynamic = "force-dynamic";
 
@@ -235,20 +242,38 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen gradient-mesh relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-primary-50/30">
+      {/* Animated Backgrounds */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <GradientMesh />
+        <AnimatedBackground />
+        <ParticleField />
+        <AnimatedShapes />
+      </div>
+      
       <Sidebar />
       
       {/* Main Content - responsive margin for sidebar */}
-      <div className="lg:ml-64 relative">
+      <div className="lg:ml-64 relative z-10">
         <div className="relative">
           {/* Header */}
           <header className="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-gray-200 shadow-sm">
             <div className="px-4 lg:px-8 py-3 md:py-4 flex items-center justify-between">
               <div className="ml-12 lg:ml-0">
-                <h2 className="text-xl md:text-2xl font-bold iridescent">Personal Analytics</h2>
+                <div className="flex items-center gap-3 mb-1">
+                  <h2 className="text-xl md:text-2xl font-bold iridescent">Personal Analytics</h2>
+                  <CorovelTokenBadge variant="compact" />
+                </div>
                 <p className="text-xs md:text-sm text-[#6B7280] mt-0.5 md:mt-1">A system view of your recent behavior</p>
               </div>
-              <div className="flex items-center gap-2 md:gap-4">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-primary-50 to-purple-50 rounded-lg border border-primary-200">
+                  <Icon icon={Coins} size="sm" className="text-primary-600" />
+                  <div>
+                    <div className="text-sm font-bold text-primary-700">{user.points}</div>
+                    <div className="text-xs text-primary-600">Tokens</div>
+                  </div>
+                </div>
                 <HeaderLogoutButton />
               </div>
             </div>
@@ -270,12 +295,21 @@ export default async function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-10">
-            {/* Total Progress */}
-            <div className="premium-card card-hover card-glow rounded-xl p-4 md:p-6 stagger-item">
-              <div className="premium-card-content">
-                <p className="text-xs md:text-sm text-[#6B7280] font-medium">Total Progress</p>
-                <div className="mt-2 text-2xl md:text-3xl font-bold text-[#1F2937]">{user.points.toLocaleString()}</div>
-                <p className="text-[11px] md:text-xs text-[#6B7280] mt-2">Cumulative points on your account.</p>
+            {/* Total Progress - Corovel Tokens */}
+            <div className="premium-card card-hover card-glow rounded-xl p-4 md:p-6 stagger-item relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-400/20 to-purple-400/20 rounded-full -mr-16 -mt-16 blur-2xl" />
+              <div className="premium-card-content relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <Icon icon={Coins} size="sm" className="text-primary-600" />
+                  <p className="text-xs md:text-sm text-[#6B7280] font-medium">Corovel Tokens</p>
+                </div>
+                <div className="mt-2 text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
+                  {user.points.toLocaleString()}
+                </div>
+                <p className="text-[11px] md:text-xs text-[#6B7280] mt-2">Your total token balance</p>
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <CorovelTokenBadge variant="compact" />
+                </div>
               </div>
             </div>
 
